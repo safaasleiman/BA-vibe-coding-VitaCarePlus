@@ -281,6 +281,7 @@ const Dashboard = () => {
               <div className="lg:col-span-2">
                 <UExaminationsList 
                   childId={selectedChildId}
+                  childName={children.find(c => c.id === selectedChildId)?.first_name || ''}
                   refreshTrigger={examinationsRefreshTrigger}
                 />
               </div>
