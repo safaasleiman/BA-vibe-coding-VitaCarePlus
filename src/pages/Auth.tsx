@@ -102,8 +102,8 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-muted via-background to-secondary/30 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow-medium overflow-hidden">
-            <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow-medium overflow-hidden animate-scale-in">
+            <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover animate-pulse" />
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Vita Care+</h1>
           <p className="text-muted-foreground">Ihre Impfungen sicher verwalten</p>

@@ -148,7 +148,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft overflow-hidden">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft overflow-hidden animate-scale-in">
                 <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
               </div>
               <div>
