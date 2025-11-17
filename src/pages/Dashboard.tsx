@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby } from "lucide-react";
+import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon } from "lucide-react";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
 import { ProfileCard } from "@/components/ProfileCard";
@@ -12,6 +12,10 @@ import { ChildrenList } from "@/components/ChildrenList";
 import { UExaminationsList } from "@/components/UExaminationsList";
 import { AddChildDialog } from "@/components/AddChildDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { ReminderBanner } from "@/components/ReminderBanner";
+import { getUpcomingExaminations, ReminderInfo } from "@/lib/reminderUtils";
+import type { Database } from "@/integrations/supabase/types";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -20,6 +24,11 @@ const Dashboard = () => {
   const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
   const [childrenRefreshTrigger, setChildrenRefreshTrigger] = useState(0);
   const [examinationsRefreshTrigger, setExaminationsRefreshTrigger] = useState(0);
+  const [reminders, setReminders] = useState<ReminderInfo[]>([]);
+  const [children, setChildren] = useState<Database['public']['Tables']['children']['Row'][]>([]);
+  const [examinations, setExaminations] = useState<Database['public']['Tables']['u_examinations']['Row'][]>([]);
+  const [daysBeforeDue, setDaysBeforeDue] = useState(30);
+  const [activeTab, setActiveTab] = useState("vaccinations");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -46,6 +55,62 @@ const Dashboard = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // Lade Reminder-Einstellungen und Daten
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchReminderData = async () => {
+      try {
+        // Lade Reminder-Einstellungen
+        const { data: prefs } = await supabase
+          .from('reminder_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (prefs?.enabled) {
+          setDaysBeforeDue(prefs.days_before_due || 30);
+
+          // Lade Kinder
+          const { data: childrenData } = await supabase
+            .from('children')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('date_of_birth', { ascending: true });
+
+          if (childrenData) {
+            setChildren(childrenData);
+
+            // Lade alle U-Untersuchungen für alle Kinder
+            const { data: examsData } = await supabase
+              .from('u_examinations')
+              .select('*')
+              .eq('user_id', user.id)
+              .order('due_date', { ascending: true });
+
+            if (examsData) {
+              setExaminations(examsData);
+
+              // Berechne Reminder
+              const upcomingReminders = getUpcomingExaminations(
+                examsData,
+                childrenData,
+                prefs.days_before_due || 30
+              );
+              setReminders(upcomingReminders);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der Reminder-Daten:', error);
+      }
+    };
+
+    fetchReminderData();
+
+    // Aktualisiere bei Änderungen
+  }, [user, childrenRefreshTrigger, examinationsRefreshTrigger]);
 
   const handleSignOut = async () => {
     try {
@@ -100,15 +165,34 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="vaccinations" className="space-y-6">
+        {/* Reminder Banner */}
+        {reminders.length > 0 && (
+          <div className="mb-6">
+            <ReminderBanner
+              reminders={reminders}
+              onDismiss={() => {}}
+              onReminderClick={() => setActiveTab("children")}
+            />
+          </div>
+        )}
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
             <TabsTrigger value="vaccinations">
               <Syringe className="w-4 h-4 mr-2" />
               Impfungen
             </TabsTrigger>
-            <TabsTrigger value="children">
+            <TabsTrigger value="children" className="relative">
               <Baby className="w-4 h-4 mr-2" />
               U-Untersuchungen
+              {reminders.length > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="ml-2 h-5 min-w-5 px-1.5 text-xs"
+                >
+                  {reminders.length}
+                </Badge>
+              )}
             </TabsTrigger>
           </TabsList>
 
