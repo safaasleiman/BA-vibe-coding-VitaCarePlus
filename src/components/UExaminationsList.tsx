@@ -3,11 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { format, isPast, isFuture } from "date-fns";
 import { de } from "date-fns/locale";
 import { toast } from "sonner";
-import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, Calendar } from "lucide-react";
 import { AddUExaminationDialog } from "./AddUExaminationDialog";
+import { exportUExaminationToCalendar } from "@/lib/icsGenerator";
+import { U_EXAMINATIONS } from "@/lib/uExaminationsCalculator";
 
 interface UExamination {
   id: string;
@@ -20,10 +23,11 @@ interface UExamination {
 
 interface UExaminationsListProps {
   childId?: string;
+  childName?: string;
   refreshTrigger: number;
 }
 
-export function UExaminationsList({ childId, refreshTrigger }: UExaminationsListProps) {
+export function UExaminationsList({ childId, childName, refreshTrigger }: UExaminationsListProps) {
   const [examinations, setExaminations] = useState<UExamination[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,6 +69,25 @@ export function UExaminationsList({ childId, refreshTrigger }: UExaminationsList
     return { label: "Ausstehend", variant: "secondary" as const, icon: Clock };
   };
 
+  const handleExportToCalendar = (exam: UExamination) => {
+    if (!childName) {
+      toast.error("Kindername nicht verfügbar");
+      return;
+    }
+
+    const examInfo = U_EXAMINATIONS.find(u => u.type === exam.examination_type);
+    const description = examInfo?.description || '';
+
+    exportUExaminationToCalendar(
+      exam.examination_type,
+      exam.due_date,
+      childName,
+      description
+    );
+
+    toast.success(`${exam.examination_type} als Kalendereintrag exportiert`);
+  };
+
   if (!childId) {
     return (
       <Card>
@@ -94,7 +117,7 @@ export function UExaminationsList({ childId, refreshTrigger }: UExaminationsList
               <TableHead>Soll-Datum</TableHead>
               <TableHead>Ist-Datum</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="w-[100px]">Aktion</TableHead>
+              <TableHead className="w-[140px]">Aktionen</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,10 +143,20 @@ export function UExaminationsList({ childId, refreshTrigger }: UExaminationsList
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <AddUExaminationDialog 
-                      examination={exam}
-                      onExaminationUpdated={fetchExaminations}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleExportToCalendar(exam)}
+                        title="Als Kalendereintrag exportieren"
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </Button>
+                      <AddUExaminationDialog 
+                        examination={exam}
+                        onExaminationUpdated={fetchExaminations}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               );
