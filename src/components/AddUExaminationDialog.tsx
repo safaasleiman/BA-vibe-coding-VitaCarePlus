@@ -1,0 +1,139 @@
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, Edit } from "lucide-react";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+interface UExamination {
+  id: string;
+  examination_type: string;
+  due_date: string;
+  actual_date: string | null;
+  doctor_name: string | null;
+  notes: string | null;
+}
+
+interface AddUExaminationDialogProps {
+  examination: UExamination;
+  onExaminationUpdated: () => void;
+}
+
+export function AddUExaminationDialog({ examination, onExaminationUpdated }: AddUExaminationDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [actualDate, setActualDate] = useState<Date | undefined>(
+    examination.actual_date ? new Date(examination.actual_date) : undefined
+  );
+  const [doctorName, setDoctorName] = useState(examination.doctor_name || "");
+  const [notes, setNotes] = useState(examination.notes || "");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    setLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from("u_examinations")
+        .update({
+          actual_date: actualDate ? format(actualDate, "yyyy-MM-dd") : null,
+          doctor_name: doctorName || null,
+          notes: notes || null,
+        })
+        .eq("id", examination.id);
+
+      if (error) throw error;
+
+      toast.success("U-Untersuchung aktualisiert");
+      setOpen(false);
+      onExaminationUpdated();
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{examination.examination_type} - Details</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label>Soll-Datum</Label>
+            <Input 
+              value={format(new Date(examination.due_date), "dd.MM.yyyy")} 
+              disabled 
+              className="bg-muted"
+            />
+          </div>
+          <div>
+            <Label>Tatsächliches Datum</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !actualDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {actualDate ? format(actualDate, "PPP", { locale: de }) : "Datum wählen"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={actualDate}
+                  onSelect={setActualDate}
+                  disabled={(date) => date > new Date()}
+                  initialFocus
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div>
+            <Label htmlFor="doctorName">Arzt/Ärztin</Label>
+            <Input
+              id="doctorName"
+              value={doctorName}
+              onChange={(e) => setDoctorName(e.target.value)}
+              placeholder="Name des Arztes/der Ärztin"
+            />
+          </div>
+          <div>
+            <Label htmlFor="notes">Notizen</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Zusätzliche Notizen..."
+              rows={3}
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Wird gespeichert..." : "Speichern"}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

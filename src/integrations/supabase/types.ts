@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      children: {
+        Row: {
+          created_at: string
+          date_of_birth: string
+          first_name: string
+          id: string
+          last_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth: string
+          first_name: string
+          id?: string
+          last_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -70,6 +100,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      u_examinations: {
+        Row: {
+          actual_date: string | null
+          child_id: string
+          created_at: string
+          doctor_name: string | null
+          due_date: string
+          examination_type: string
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_date?: string | null
+          child_id: string
+          created_at?: string
+          doctor_name?: string | null
+          due_date: string
+          examination_type: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_date?: string | null
+          child_id?: string
+          created_at?: string
+          doctor_name?: string | null
+          due_date?: string
+          examination_type?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "u_examinations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vaccination_documents: {
         Row: {
