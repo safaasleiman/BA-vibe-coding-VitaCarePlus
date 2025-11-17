@@ -151,7 +151,7 @@ const Dashboard = () => {
                 <Syringe className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">Digitaler Impfpass</h1>
+                <h1 className="text-xl font-bold text-foreground">Vita Care+</h1>
                 <p className="text-sm text-muted-foreground">Willkommen zurück!</p>
               </div>
             </div>
