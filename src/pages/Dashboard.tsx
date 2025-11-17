@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon } from "lucide-react";
+import vitacareLogo from "@/assets/vitacare-logo.png";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
 import { ProfileCard } from "@/components/ProfileCard";
@@ -147,8 +148,8 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-soft">
-                <Syringe className="w-5 h-5 text-primary-foreground" />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft overflow-hidden">
+                <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-foreground">Vita Care+</h1>
