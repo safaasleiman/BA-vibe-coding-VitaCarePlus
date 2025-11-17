@@ -4,15 +4,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Syringe, Plus, LogOut, Calendar, FileText, User } from "lucide-react";
+import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby } from "lucide-react";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
 import { ProfileCard } from "@/components/ProfileCard";
+import { ChildrenList } from "@/components/ChildrenList";
+import { UExaminationsList } from "@/components/UExaminationsList";
+import { AddChildDialog } from "@/components/AddChildDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
+  const [childrenRefreshTrigger, setChildrenRefreshTrigger] = useState(0);
+  const [examinationsRefreshTrigger, setExaminationsRefreshTrigger] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -93,57 +100,109 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Left Column - Profile & Stats */}
-          <div className="space-y-6">
-            <ProfileCard userId={user?.id} />
+        <Tabs defaultValue="vaccinations" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+            <TabsTrigger value="vaccinations">
+              <Syringe className="w-4 h-4 mr-2" />
+              Impfungen
+            </TabsTrigger>
+            <TabsTrigger value="children">
+              <Baby className="w-4 h-4 mr-2" />
+              U-Untersuchungen
+            </TabsTrigger>
+          </TabsList>
 
-            {/* Quick Stats */}
-            <Card className="shadow-soft border-border/50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-primary" />
-                  Übersicht
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">Impfungen</span>
-                  </div>
-                  <span className="text-lg font-bold text-primary">-</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <TabsContent value="vaccinations" className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Left Column - Profile & Stats */}
+              <div className="space-y-6">
+                <ProfileCard userId={user?.id} />
 
-          {/* Right Column - Vaccinations */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="shadow-soft border-border/50">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Syringe className="w-5 h-5 text-primary" />
-                      Meine Impfungen
+                {/* Quick Stats */}
+                <Card className="shadow-soft border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      Übersicht
                     </CardTitle>
-                    <CardDescription>
-                      Verwalten Sie Ihre Impfnachweise
-                    </CardDescription>
-                  </div>
-                  <Button onClick={() => setShowAddDialog(true)} size="sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Hinzufügen
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <VaccinationList userId={user?.id} />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium">Impfungen</span>
+                      </div>
+                      <span className="text-lg font-bold text-primary">-</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column - Vaccinations */}
+              <div className="lg:col-span-2 space-y-6">
+                <Card className="shadow-soft border-border/50">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Syringe className="w-5 h-5 text-primary" />
+                          Meine Impfungen
+                        </CardTitle>
+                        <CardDescription>
+                          Verwalten Sie Ihre Impfnachweise
+                        </CardDescription>
+                      </div>
+                      <Button onClick={() => setShowAddDialog(true)} size="sm">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Hinzufügen
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <VaccinationList userId={user?.id} />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="children" className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Left Column - Children List */}
+              <div className="space-y-6">
+                <Card className="shadow-soft border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Baby className="w-5 h-5 text-primary" />
+                      Kinder
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ChildrenList 
+                      onChildSelect={setSelectedChildId}
+                      selectedChildId={selectedChildId}
+                      refreshTrigger={childrenRefreshTrigger}
+                    />
+                    <AddChildDialog 
+                      onChildAdded={() => {
+                        setChildrenRefreshTrigger(prev => prev + 1);
+                        setExaminationsRefreshTrigger(prev => prev + 1);
+                      }}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column - U-Examinations */}
+              <div className="lg:col-span-2">
+                <UExaminationsList 
+                  childId={selectedChildId}
+                  refreshTrigger={examinationsRefreshTrigger}
+                />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <AddVaccinationDialog
