@@ -32,6 +32,9 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
   const [actualDate, setActualDate] = useState<Date | undefined>(
     examination.actual_date ? new Date(examination.actual_date) : undefined
   );
+  const [dateInput, setDateInput] = useState(
+    examination.actual_date ? format(new Date(examination.actual_date), "dd.MM.yyyy") : ""
+  );
   const [doctorName, setDoctorName] = useState(examination.doctor_name || "");
   const [notes, setNotes] = useState(examination.notes || "");
   const [loading, setLoading] = useState(false);
@@ -85,30 +88,61 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
           </div>
           <div>
             <Label>Tatsächliches Datum</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !actualDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {actualDate ? format(actualDate, "PPP", { locale: de }) : "Datum wählen"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={actualDate}
-                  onSelect={setActualDate}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="TT.MM.JJJJ"
+                value={dateInput}
+                onChange={(e) => {
+                  setDateInput(e.target.value);
+                  const parts = e.target.value.split(".");
+                  if (parts.length === 3) {
+                    const day = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const year = parseInt(parts[2]);
+                    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                      const date = new Date(year, month, day);
+                      if (date.getDate() === day && date.getMonth() === month) {
+                        setActualDate(date);
+                      }
+                    }
+                  }
+                }}
+                className="flex-1"
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={cn(!actualDate && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={actualDate}
+                    onSelect={(date) => {
+                      setActualDate(date);
+                      if (date) {
+                        setDateInput(format(date, "dd.MM.yyyy"));
+                      }
+                    }}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    locale={de}
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {actualDate && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {format(actualDate, "dd.MM.yyyy")}
+              </p>
+            )}
           </div>
           <div>
             <Label htmlFor="doctorName">Arzt/Ärztin</Label>

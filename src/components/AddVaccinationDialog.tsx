@@ -5,8 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { de } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface AddVaccinationDialogProps {
   open: boolean;
@@ -17,11 +22,13 @@ interface AddVaccinationDialogProps {
 export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinationDialogProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const [vaccinationDate, setVaccinationDate] = useState<Date>();
+  const [vaccinationDateInput, setVaccinationDateInput] = useState("");
+  const [nextDueDate, setNextDueDate] = useState<Date>();
+  const [nextDueDateInput, setNextDueDateInput] = useState("");
   const [formData, setFormData] = useState({
     vaccine_name: "",
     vaccine_type: "",
-    vaccination_date: "",
-    next_due_date: "",
     doctor_name: "",
     batch_number: "",
     notes: "",
@@ -29,6 +36,16 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!vaccinationDate) {
+      toast({
+        title: "Fehler",
+        description: "Bitte geben Sie ein Impfdatum an.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -36,8 +53,8 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
         user_id: userId,
         vaccine_name: formData.vaccine_name,
         vaccine_type: formData.vaccine_type,
-        vaccination_date: formData.vaccination_date,
-        next_due_date: formData.next_due_date || null,
+        vaccination_date: format(vaccinationDate, "yyyy-MM-dd"),
+        next_due_date: nextDueDate ? format(nextDueDate, "yyyy-MM-dd") : null,
         doctor_name: formData.doctor_name || null,
         batch_number: formData.batch_number || null,
         notes: formData.notes || null,
@@ -54,12 +71,14 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
       setFormData({
         vaccine_name: "",
         vaccine_type: "",
-        vaccination_date: "",
-        next_due_date: "",
         doctor_name: "",
         batch_number: "",
         notes: "",
       });
+      setVaccinationDate(undefined);
+      setVaccinationDateInput("");
+      setNextDueDate(undefined);
+      setNextDueDateInput("");
       onOpenChange(false);
       
       // Trigger a refresh by reloading vaccinations
@@ -116,25 +135,113 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="vaccination_date">Impfdatum *</Label>
-              <Input
-                id="vaccination_date"
-                type="date"
-                value={formData.vaccination_date}
-                onChange={(e) => setFormData({ ...formData, vaccination_date: e.target.value })}
-                required
-                disabled={loading}
-              />
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="TT.MM.JJJJ"
+                  value={vaccinationDateInput}
+                  onChange={(e) => {
+                    setVaccinationDateInput(e.target.value);
+                    const parts = e.target.value.split(".");
+                    if (parts.length === 3) {
+                      const day = parseInt(parts[0]);
+                      const month = parseInt(parts[1]) - 1;
+                      const year = parseInt(parts[2]);
+                      if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                        const date = new Date(year, month, day);
+                        if (date.getDate() === day && date.getMonth() === month) {
+                          setVaccinationDate(date);
+                        }
+                      }
+                    }
+                  }}
+                  className="flex-1"
+                  disabled={loading}
+                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={cn(!vaccinationDate && "text-muted-foreground")}
+                      disabled={loading}
+                    >
+                      <CalendarIcon className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={vaccinationDate}
+                      onSelect={(date) => {
+                        setVaccinationDate(date);
+                        if (date) {
+                          setVaccinationDateInput(format(date, "dd.MM.yyyy"));
+                        }
+                      }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      locale={de}
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="next_due_date">Nächste Impfung</Label>
-              <Input
-                id="next_due_date"
-                type="date"
-                value={formData.next_due_date}
-                onChange={(e) => setFormData({ ...formData, next_due_date: e.target.value })}
-                disabled={loading}
-              />
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="TT.MM.JJJJ"
+                  value={nextDueDateInput}
+                  onChange={(e) => {
+                    setNextDueDateInput(e.target.value);
+                    const parts = e.target.value.split(".");
+                    if (parts.length === 3) {
+                      const day = parseInt(parts[0]);
+                      const month = parseInt(parts[1]) - 1;
+                      const year = parseInt(parts[2]);
+                      if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                        const date = new Date(year, month, day);
+                        if (date.getDate() === day && date.getMonth() === month) {
+                          setNextDueDate(date);
+                        }
+                      }
+                    }
+                  }}
+                  className="flex-1"
+                  disabled={loading}
+                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={cn(!nextDueDate && "text-muted-foreground")}
+                      disabled={loading}
+                    >
+                      <CalendarIcon className="h-4 w-4" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={nextDueDate}
+                      onSelect={(date) => {
+                        setNextDueDate(date);
+                        if (date) {
+                          setNextDueDateInput(format(date, "dd.MM.yyyy"));
+                        }
+                      }}
+                      initialFocus
+                      locale={de}
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </div>
 

@@ -4,15 +4,66 @@ import { DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+  const [currentMonth, setCurrentMonth] = React.useState<Date>(props.selected as Date || new Date());
+
+  const months = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember"
+  ];
+
+  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+
+  const handleMonthChange = (month: string) => {
+    const newDate = new Date(currentMonth);
+    newDate.setMonth(parseInt(month));
+    setCurrentMonth(newDate);
+  };
+
+  const handleYearChange = (year: string) => {
+    const newDate = new Date(currentMonth);
+    newDate.setFullYear(parseInt(year));
+    setCurrentMonth(newDate);
+  };
+
   return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
-      classNames={{
+    <div>
+      <div className="flex gap-2 p-3 pb-0">
+        <Select value={currentMonth.getMonth().toString()} onValueChange={handleMonthChange}>
+          <SelectTrigger className="w-[130px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {months.map((month, index) => (
+              <SelectItem key={index} value={index.toString()}>
+                {month}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={currentMonth.getFullYear().toString()} onValueChange={handleYearChange}>
+          <SelectTrigger className="w-[100px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {years.map((year) => (
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <DayPicker
+        month={currentMonth}
+        onMonthChange={setCurrentMonth}
+        showOutsideDays={showOutsideDays}
+        className={cn("p-3", className)}
+        classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
@@ -47,6 +98,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       }}
       {...props}
     />
+    </div>
   );
 }
 Calendar.displayName = "Calendar";
