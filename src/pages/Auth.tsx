@@ -106,7 +106,7 @@ const Auth = () => {
             <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover animate-pulse" />
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Vita Care+</h1>
-          <p className="text-muted-foreground">Ihre Impfungen sicher verwalten</p>
+          <p className="text-muted-foreground">Vorsorge, die mitdenkt</p>
         </div>
 
         <Card className="shadow-medium border-border/50">
