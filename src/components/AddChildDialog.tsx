@@ -22,6 +22,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState<Date>();
+  const [dateInput, setDateInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,6 +76,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
       setFirstName("");
       setLastName("");
       setDateOfBirth(undefined);
+      setDateInput("");
       onChildAdded();
     } catch (error: any) {
       toast.error(error.message);
@@ -116,30 +118,61 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
           </div>
           <div>
             <Label>Geburtsdatum</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !dateOfBirth && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {dateOfBirth ? format(dateOfBirth, "PPP", { locale: de }) : "Datum wählen"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={dateOfBirth}
-                  onSelect={setDateOfBirth}
-                  disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                  initialFocus
-                  className="pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                placeholder="TT.MM.JJJJ"
+                value={dateInput}
+                onChange={(e) => {
+                  setDateInput(e.target.value);
+                  const parts = e.target.value.split(".");
+                  if (parts.length === 3) {
+                    const day = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const year = parseInt(parts[2]);
+                    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                      const date = new Date(year, month, day);
+                      if (date.getDate() === day && date.getMonth() === month) {
+                        setDateOfBirth(date);
+                      }
+                    }
+                  }
+                }}
+                className="flex-1"
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={cn(!dateOfBirth && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateOfBirth}
+                    onSelect={(date) => {
+                      setDateOfBirth(date);
+                      if (date) {
+                        setDateInput(format(date, "dd.MM.yyyy"));
+                      }
+                    }}
+                    disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                    initialFocus
+                    locale={de}
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {dateOfBirth && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {format(dateOfBirth, "dd.MM.yyyy")}
+              </p>
+            )}
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Wird gespeichert..." : "Kind anlegen"}
