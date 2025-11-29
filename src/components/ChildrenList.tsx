@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format, differenceInYears, differenceInMonths } from "date-fns";
 import { de } from "date-fns/locale";
-import { Baby, Trash2 } from "lucide-react";
+import { Baby, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { EditChildDialog } from "./EditChildDialog";
 
 interface Child {
   id: string;
@@ -23,6 +24,7 @@ interface ChildrenListProps {
 export function ChildrenList({ onChildSelect, selectedChildId, refreshTrigger }: ChildrenListProps) {
   const [children, setChildren] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingChild, setEditingChild] = useState<Child | null>(null);
 
   const fetchChildren = async () => {
     try {
@@ -107,42 +109,66 @@ export function ChildrenList({ onChildSelect, selectedChildId, refreshTrigger }:
   }
 
   return (
-    <div className="space-y-3">
-      {children.map((child) => (
-        <Card
-          key={child.id}
-          className={cn(
-            "cursor-pointer transition-all hover:shadow-md",
-            selectedChildId === child.id && "ring-2 ring-primary"
-          )}
-          onClick={() => onChildSelect(child.id)}
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <CardTitle className="text-lg">
-                  {child.first_name} {child.last_name}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {format(new Date(child.date_of_birth), "PPP", { locale: de })}
-                </p>
-                <p className="text-sm font-medium text-primary mt-1">
-                  {getAge(child.date_of_birth)} alt
-                </p>
+    <>
+      <div className="space-y-3">
+        {children.map((child) => (
+          <Card
+            key={child.id}
+            className={cn(
+              "cursor-pointer transition-all hover:shadow-md",
+              selectedChildId === child.id && "ring-2 ring-primary"
+            )}
+            onClick={() => onChildSelect(child.id)}
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <CardTitle className="text-lg">
+                    {child.first_name} {child.last_name}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {format(new Date(child.date_of_birth), "PPP", { locale: de })}
+                  </p>
+                  <p className="text-sm font-medium text-primary mt-1">
+                    {getAge(child.date_of_birth)} alt
+                  </p>
+                </div>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingChild(child);
+                    }}
+                    className="hover:text-primary"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => handleDelete(child.id, e)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={(e) => handleDelete(child.id, e)}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
-      ))}
-    </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+      
+      {editingChild && (
+        <EditChildDialog
+          child={editingChild}
+          open={!!editingChild}
+          onOpenChange={(open) => !open && setEditingChild(null)}
+          onChildUpdated={fetchChildren}
+        />
+      )}
+    </>
   );
 }
 
