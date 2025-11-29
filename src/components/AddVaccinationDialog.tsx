@@ -158,9 +158,10 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
                   className="flex-1"
                   disabled={loading}
                 />
-                <Popover modal={true}>
+                <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      type="button"
                       variant="outline"
                       size="icon"
                       className={cn(!vaccinationDate && "text-muted-foreground")}
@@ -169,7 +170,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
                       <CalendarIcon className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-popover" align="end" side="right" sideOffset={10}>
+                  <PopoverContent className="w-auto p-0" align="center" side="top">
                     <Calendar
                       mode="single"
                       selected={vaccinationDate}
@@ -180,7 +181,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
                         }
                       }}
                       disabled={(date) => date > new Date()}
-                      initialFocus
+                      initialFocus={false}
                       locale={de}
                       className="pointer-events-auto"
                     />
@@ -214,9 +215,10 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
                   className="flex-1"
                   disabled={loading}
                 />
-                <Popover modal={true}>
+                <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      type="button"
                       variant="outline"
                       size="icon"
                       className={cn(!nextDueDate && "text-muted-foreground")}
@@ -225,7 +227,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
                       <CalendarIcon className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-popover" align="end" side="right" sideOffset={10}>
+                  <PopoverContent className="w-auto p-0" align="center" side="top">
                     <Calendar
                       mode="single"
                       selected={nextDueDate}
@@ -235,7 +237,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
                           setNextDueDateInput(format(date, "dd.MM.yyyy"));
                         }
                       }}
-                      initialFocus
+                      initialFocus={false}
                       locale={de}
                       className="pointer-events-auto"
                     />

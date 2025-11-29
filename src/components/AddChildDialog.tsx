@@ -140,9 +140,10 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
                 }}
                 className="flex-1"
               />
-              <Popover modal={true}>
+              <Popover>
                 <PopoverTrigger asChild>
                   <Button
+                    type="button"
                     variant="outline"
                     size="icon"
                     className={cn(!dateOfBirth && "text-muted-foreground")}
@@ -150,7 +151,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover" align="end" side="right" sideOffset={10}>
+                <PopoverContent className="w-auto p-0" align="center" side="top">
                   <Calendar
                     mode="single"
                     selected={dateOfBirth}
@@ -161,7 +162,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
                       }
                     }}
                     disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                    initialFocus
+                    initialFocus={false}
                     locale={de}
                     className="pointer-events-auto"
                   />
