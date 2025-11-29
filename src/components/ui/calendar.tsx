@@ -37,7 +37,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
           <SelectTrigger className="w-[130px]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[200]">
             {months.map((month, index) => (
               <SelectItem key={index} value={index.toString()}>
                 {month}
@@ -49,7 +49,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
           <SelectTrigger className="w-[100px]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[200]">
             {years.map((year) => (
               <SelectItem key={year} value={year.toString()}>
                 {year}
