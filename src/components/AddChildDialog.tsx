@@ -140,7 +140,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
                 }}
                 className="flex-1"
               />
-              <Popover>
+              <Popover modal={true}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -150,7 +150,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover z-[100]" align="start" side="bottom">
+                <PopoverContent className="w-auto p-0 bg-popover" align="end" side="right" sideOffset={10}>
                   <Calendar
                     mode="single"
                     selected={dateOfBirth}
