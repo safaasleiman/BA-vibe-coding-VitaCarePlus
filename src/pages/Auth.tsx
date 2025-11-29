@@ -22,7 +22,7 @@ const Auth = () => {
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -31,7 +31,7 @@ const Auth = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -57,8 +57,8 @@ const Auth = () => {
       if (error) throw error;
 
       toast({
-        title: "Registrierung erfolgreich!",
-        description: "Sie können sich jetzt anmelden.",
+        title: "Willkommen bei Vita Care+!",
+        description: "Sie wurden automatisch eingeloggt.",
       });
     } catch (error: any) {
       toast({
