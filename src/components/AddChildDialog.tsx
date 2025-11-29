@@ -93,7 +93,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
           Kind hinzufügen
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Neues Kind anlegen</DialogTitle>
         </DialogHeader>
@@ -150,7 +150,7 @@ export function AddChildDialog({ onChildAdded }: AddChildDialogProps) {
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-50" align="start" side="bottom">
                   <Calendar
                     mode="single"
                     selected={dateOfBirth}

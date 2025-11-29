@@ -73,7 +73,7 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
           <Edit className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{examination.examination_type} - Details</DialogTitle>
         </DialogHeader>
@@ -120,7 +120,7 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-50" align="start" side="bottom">
                   <Calendar
                     mode="single"
                     selected={actualDate}
