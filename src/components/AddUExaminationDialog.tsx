@@ -110,9 +110,10 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
                 }}
                 className="flex-1"
               />
-              <Popover modal={true}>
+              <Popover>
                 <PopoverTrigger asChild>
                   <Button
+                    type="button"
                     variant="outline"
                     size="icon"
                     className={cn(!actualDate && "text-muted-foreground")}
@@ -120,7 +121,7 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
                     <CalendarIcon className="h-4 w-4" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover" align="end" side="right" sideOffset={10}>
+                <PopoverContent className="w-auto p-0" align="center" side="top">
                   <Calendar
                     mode="single"
                     selected={actualDate}
@@ -131,7 +132,7 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
                       }
                     }}
                     disabled={(date) => date > new Date()}
-                    initialFocus
+                    initialFocus={false}
                     locale={de}
                     className="pointer-events-auto"
                   />
