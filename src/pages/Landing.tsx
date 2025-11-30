@@ -36,12 +36,16 @@ const Landing = () => {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <div className="container mx-auto">
+      <section className="relative overflow-hidden pt-32 pb-20 px-4">
+        <div className="absolute inset-0 bg-gradient-hero opacity-50"></div>
+        <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 animate-fade-in">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-                Ihre Gesundheit, immer im Blick
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                Ihre Gesundheit,{" "}
+                <span className="bg-gradient-primary bg-clip-text text-transparent">
+                  immer im Blick
+                </span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground">
                 Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
