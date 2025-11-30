@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon } from "lucide-react";
+import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock } from "lucide-react";
 import vitacareLogo from "@/assets/vitacare-logo.png";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
@@ -15,7 +15,8 @@ import { AddChildDialog } from "@/components/AddChildDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ReminderBanner } from "@/components/ReminderBanner";
-import { getUpcomingExaminations, ReminderInfo } from "@/lib/reminderUtils";
+import { VaccinationReminderBanner } from "@/components/VaccinationReminderBanner";
+import { getUpcomingExaminations, ReminderInfo, getUpcomingVaccinations, VaccinationReminderInfo, Vaccination } from "@/lib/reminderUtils";
 import type { Database } from "@/integrations/supabase/types";
 
 const Dashboard = () => {
@@ -26,10 +27,14 @@ const Dashboard = () => {
   const [childrenRefreshTrigger, setChildrenRefreshTrigger] = useState(0);
   const [examinationsRefreshTrigger, setExaminationsRefreshTrigger] = useState(0);
   const [reminders, setReminders] = useState<ReminderInfo[]>([]);
+  const [vaccinationReminders, setVaccinationReminders] = useState<VaccinationReminderInfo[]>([]);
   const [children, setChildren] = useState<Database['public']['Tables']['children']['Row'][]>([]);
   const [examinations, setExaminations] = useState<Database['public']['Tables']['u_examinations']['Row'][]>([]);
+  const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
+  const [vaccinationCount, setVaccinationCount] = useState(0);
   const [daysBeforeDue, setDaysBeforeDue] = useState(30);
   const [activeTab, setActiveTab] = useState("vaccinations");
+  const [vaccinationsRefreshTrigger, setVaccinationsRefreshTrigger] = useState(0);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -109,9 +114,47 @@ const Dashboard = () => {
     };
 
     fetchReminderData();
-
-    // Aktualisiere bei Änderungen
   }, [user, childrenRefreshTrigger, examinationsRefreshTrigger]);
+
+  // Lade Impfungen und berechne Impf-Reminder
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchVaccinationData = async () => {
+      try {
+        const { data: prefs } = await supabase
+          .from('reminder_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        // Lade Impfungen
+        const { data: vaccinationsData } = await supabase
+          .from('vaccinations')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('vaccination_date', { ascending: false });
+
+        if (vaccinationsData) {
+          setVaccinations(vaccinationsData as Vaccination[]);
+          setVaccinationCount(vaccinationsData.length);
+
+          // Berechne Impf-Reminder wenn aktiviert
+          if (prefs?.enabled) {
+            const upcomingVaccinations = getUpcomingVaccinations(
+              vaccinationsData as Vaccination[],
+              prefs.days_before_due || 30
+            );
+            setVaccinationReminders(upcomingVaccinations);
+          }
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der Impfdaten:', error);
+      }
+    };
+
+    fetchVaccinationData();
+  }, [user, vaccinationsRefreshTrigger]);
 
   const handleSignOut = async () => {
     try {
@@ -179,9 +222,17 @@ const Dashboard = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-            <TabsTrigger value="vaccinations">
+            <TabsTrigger value="vaccinations" className="relative">
               <Syringe className="w-4 h-4 mr-2" />
               Impfungen
+              {vaccinationReminders.length > 0 && (
+                <Badge 
+                  variant="destructive" 
+                  className="ml-2 h-5 min-w-5 px-1.5 text-xs"
+                >
+                  {vaccinationReminders.length}
+                </Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="children" className="relative">
               <Baby className="w-4 h-4 mr-2" />
@@ -198,6 +249,15 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="vaccinations" className="space-y-6">
+            {/* Vaccination Reminder Banner */}
+            {vaccinationReminders.length > 0 && (
+              <VaccinationReminderBanner
+                reminders={vaccinationReminders}
+                onDismiss={() => {}}
+                onReminderClick={() => {}}
+              />
+            )}
+
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Left Column - Profile & Stats */}
               <div className="space-y-6">
@@ -217,8 +277,32 @@ const Dashboard = () => {
                         <FileText className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium">Impfungen</span>
                       </div>
-                      <span className="text-lg font-bold text-primary">-</span>
+                      <span className="text-lg font-bold text-primary">{vaccinationCount}</span>
                     </div>
+                    {vaccinationReminders.length > 0 && (
+                      <>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                            <span className="text-sm font-medium">Fällig</span>
+                          </div>
+                          <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                            {vaccinationReminders.filter(r => !r.isOverdue).length}
+                          </span>
+                        </div>
+                        {vaccinationReminders.some(r => r.isOverdue) && (
+                          <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-950/20">
+                            <div className="flex items-center gap-2">
+                              <BadgeIcon className="w-4 h-4 text-red-600 dark:text-red-400" />
+                              <span className="text-sm font-medium">Überfällig</span>
+                            </div>
+                            <span className="text-lg font-bold text-red-600 dark:text-red-400">
+                              {vaccinationReminders.filter(r => r.isOverdue).length}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -244,7 +328,10 @@ const Dashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <VaccinationList userId={user?.id} />
+                    <VaccinationList 
+                      userId={user?.id} 
+                      onVaccinationChange={() => setVaccinationsRefreshTrigger(prev => prev + 1)}
+                    />
                   </CardContent>
                 </Card>
               </div>
@@ -295,6 +382,7 @@ const Dashboard = () => {
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
         userId={user?.id}
+        onVaccinationAdded={() => setVaccinationsRefreshTrigger(prev => prev + 1)}
       />
     </div>
   );

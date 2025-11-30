@@ -17,9 +17,10 @@ interface AddVaccinationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
+  onVaccinationAdded?: () => void;
 }
 
-export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinationDialogProps) => {
+export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccinationAdded }: AddVaccinationDialogProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const [vaccinationDate, setVaccinationDate] = useState<Date>();
@@ -80,6 +81,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId }: AddVaccinat
       setNextDueDate(undefined);
       setNextDueDateInput("");
       onOpenChange(false);
+      onVaccinationAdded?.();
       
       // Trigger a refresh by reloading vaccinations
       window.location.reload();
