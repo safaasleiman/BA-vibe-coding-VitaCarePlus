@@ -21,11 +21,13 @@ interface Vaccination {
 
 interface VaccinationListProps {
   userId: string;
+  onVaccinationChange?: () => void;
 }
 
-export const VaccinationList = ({ userId }: VaccinationListProps) => {
+export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationListProps) => {
   const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'due'>('all');
   const { toast } = useToast();
 
   const fetchVaccinations = async () => {
@@ -70,6 +72,7 @@ export const VaccinationList = ({ userId }: VaccinationListProps) => {
       });
       
       fetchVaccinations();
+      onVaccinationChange?.();
     } catch (error: any) {
       toast({
         title: "Fehler beim Löschen",
@@ -103,7 +106,47 @@ export const VaccinationList = ({ userId }: VaccinationListProps) => {
 
   return (
     <div className="space-y-4">
-      {vaccinations.map((vaccination) => {
+      <div className="flex items-center gap-2 mb-4">
+        <Button
+          variant={filter === 'all' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilter('all')}
+        >
+          Alle
+        </Button>
+        <Button
+          variant={filter === 'due' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilter('due')}
+        >
+          Nur fällige
+        </Button>
+      </div>
+
+      {vaccinations
+        .filter((vaccination) => {
+          if (filter === 'all') return true;
+          const isDue = vaccination.next_due_date && 
+            new Date(vaccination.next_due_date) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+          return isDue;
+        })
+        .sort((a, b) => {
+          // Sortiere fällige Impfungen zuerst
+          const aDue = a.next_due_date && 
+            new Date(a.next_due_date) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+          const bDue = b.next_due_date && 
+            new Date(b.next_due_date) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+          
+          if (aDue && !bDue) return -1;
+          if (!aDue && bDue) return 1;
+          
+          // Dann nach Fälligkeitsdatum oder Impfdatum
+          if (a.next_due_date && b.next_due_date) {
+            return new Date(a.next_due_date).getTime() - new Date(b.next_due_date).getTime();
+          }
+          return new Date(b.vaccination_date).getTime() - new Date(a.vaccination_date).getTime();
+        })
+        .map((vaccination) => {
         const isDue = vaccination.next_due_date && 
           new Date(vaccination.next_due_date) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
