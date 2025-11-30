@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ReminderBanner } from "@/components/ReminderBanner";
 import { VaccinationReminderBanner } from "@/components/VaccinationReminderBanner";
+import { OverviewStatsCard } from "@/components/OverviewStatsCard";
 import { getUpcomingExaminations, ReminderInfo, getUpcomingVaccinations, VaccinationReminderInfo, Vaccination } from "@/lib/reminderUtils";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -263,48 +264,12 @@ const Dashboard = () => {
               <div className="space-y-6">
                 <ProfileCard userId={user?.id} />
 
-                {/* Quick Stats */}
-                <Card className="shadow-soft border-border/50">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-primary" />
-                      Übersicht
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium">Impfungen</span>
-                      </div>
-                      <span className="text-lg font-bold text-primary">{vaccinationCount}</span>
-                    </div>
-                    {vaccinationReminders.length > 0 && (
-                      <>
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-orange-50 dark:bg-orange-950/20">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-                            <span className="text-sm font-medium">Fällig</span>
-                          </div>
-                          <span className="text-lg font-bold text-orange-600 dark:text-orange-400">
-                            {vaccinationReminders.filter(r => !r.isOverdue).length}
-                          </span>
-                        </div>
-                        {vaccinationReminders.some(r => r.isOverdue) && (
-                          <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-950/20">
-                            <div className="flex items-center gap-2">
-                              <BadgeIcon className="w-4 h-4 text-red-600 dark:text-red-400" />
-                              <span className="text-sm font-medium">Überfällig</span>
-                            </div>
-                            <span className="text-lg font-bold text-red-600 dark:text-red-400">
-                              {vaccinationReminders.filter(r => r.isOverdue).length}
-                            </span>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
+                {/* Übersicht mit klickbaren Statistiken */}
+                <OverviewStatsCard
+                  type="vaccination"
+                  vaccinations={vaccinations}
+                  vaccinationReminders={vaccinationReminders}
+                />
               </div>
 
               {/* Right Column - Vaccinations */}
@@ -340,7 +305,7 @@ const Dashboard = () => {
 
           <TabsContent value="children" className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-3">
-              {/* Left Column - Children List */}
+              {/* Left Column - Children List & Stats */}
               <div className="space-y-6">
                 <Card className="shadow-soft border-border/50">
                   <CardHeader>
@@ -363,6 +328,13 @@ const Dashboard = () => {
                     />
                   </CardContent>
                 </Card>
+
+                {/* Übersicht U-Untersuchungen */}
+                <OverviewStatsCard
+                  type="examination"
+                  examinations={examinations}
+                  children={children}
+                />
               </div>
 
               {/* Right Column - U-Examinations */}
