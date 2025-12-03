@@ -127,73 +127,76 @@ const Landing = () => {
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 px-4">
-        <div className="container mx-auto">
+      <section id="benefits" className="py-20 px-4 bg-background">
+        <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Warum Vita Care+?
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-3">
+              Warum VitaCare+?
             </h2>
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
+              Die wichtigsten Vorteile Ihrer digitalen Gesundheitsvorsorge auf einen Blick.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <div className="flex items-start gap-4 p-6 rounded-lg bg-card border border-border hover-scale">
-              <Shield className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">DSGVO-konform</h3>
-                <p className="text-sm text-muted-foreground">
-                  Ihre sensiblen Gesundheitsdaten sind bei uns sicher und geschützt
-                </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Shield className="w-5 h-5 text-primary" />
               </div>
+              <h3 className="font-semibold text-foreground text-base mb-1.5">DSGVO-konform</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Ihre sensiblen Gesundheitsdaten sind bei uns sicher und geschützt.
+              </p>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-lg bg-card border border-border hover-scale">
-              <Users className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Familienkalender</h3>
-                <p className="text-sm text-muted-foreground">
-                  Verwalten Sie die Gesundheitsvorsorge der ganzen Familie zentral
-                </p>
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Users className="w-5 h-5 text-primary" />
               </div>
+              <h3 className="font-semibold text-foreground text-base mb-1.5">Familienkalender</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Verwalten Sie die Gesundheitsvorsorge der ganzen Familie zentral.
+              </p>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-lg bg-card border border-border hover-scale">
-              <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">RKI-basiert</h3>
-                <p className="text-sm text-muted-foreground">
-                  Alle Empfehlungen folgen den offiziellen RKI-Richtlinien
-                </p>
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
+              <h3 className="font-semibold text-foreground text-base mb-1.5">RKI-basiert</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Alle Empfehlungen folgen den offiziellen RKI-Richtlinien.
+              </p>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-lg bg-card border border-border hover-scale">
-              <Calendar className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Export-Funktion</h3>
-                <p className="text-sm text-muted-foreground">
-                  Exportieren Sie Termine direkt in Ihren Kalender
-                </p>
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Calendar className="w-5 h-5 text-primary" />
               </div>
+              <h3 className="font-semibold text-foreground text-base mb-1.5">Export-Funktion</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Exportieren Sie Termine direkt in Ihren Kalender.
+              </p>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-lg bg-card border border-border hover-scale">
-              <Bell className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Keine Termine verpassen</h3>
-                <p className="text-sm text-muted-foreground">
-                  Rechtzeitige Erinnerungen damit Sie jeden Termin wahrnehmen können
-                </p>
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <Bell className="w-5 h-5 text-primary" />
               </div>
+              <h3 className="font-semibold text-foreground text-base mb-1.5">Keine Termine verpassen</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Rechtzeitige Erinnerungen für jeden wichtigen Termin.
+              </p>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-lg bg-card border border-border hover-scale">
-              <ClipboardList className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Übersichtlich</h3>
-                <p className="text-sm text-muted-foreground">
-                  Alle wichtigen Informationen auf einen Blick verfügbar
-                </p>
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                <ClipboardList className="w-5 h-5 text-primary" />
               </div>
+              <h3 className="font-semibold text-foreground text-base mb-1.5">Übersichtlich</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Alle wichtigen Informationen auf einen Blick verfügbar.
+              </p>
             </div>
           </div>
         </div>

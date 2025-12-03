@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield } from "lucide-react";
 import vitacareLogo from "@/assets/vitacare-logo.png";
 
 const Auth = () => {
@@ -15,18 +13,17 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/dashboard");
       }
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -99,108 +96,148 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-muted via-background to-secondary/30 p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-auth p-4">
+      <div className="w-full max-w-[440px]">
+        {/* Header with Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 shadow-medium overflow-hidden animate-scale-in">
-            <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover animate-pulse" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 overflow-hidden animate-scale-in">
+            <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Vita Care+</h1>
-          <p className="text-muted-foreground">Vorsorge, die mitdenkt</p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">
+            {activeTab === "signin" ? "Anmelden bei VitaCare+" : "Registrieren bei VitaCare+"}
+          </h1>
+          <p className="text-muted-foreground text-base">
+            Vorsorge, die mitdenkt – sicher und DSGVO-konform.
+          </p>
         </div>
 
-        <Card className="shadow-medium border-border/50">
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-5 h-5 text-primary" />
-              <CardTitle>Anmeldung</CardTitle>
+        {/* Auth Card */}
+        <Card className="shadow-form border-0 rounded-2xl">
+          <CardContent className="p-6 md:p-8">
+            {/* Segment Control Tabs */}
+            <div className="flex bg-muted rounded-xl p-1 mb-6">
+              <button
+                type="button"
+                onClick={() => setActiveTab("signin")}
+                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === "signin"
+                    ? "bg-primary/15 text-primary shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Anmelden
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("signup")}
+                className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === "signup"
+                    ? "bg-primary/15 text-primary shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Registrieren
+              </button>
             </div>
-            <CardDescription>
-              Melden Sie sich an oder erstellen Sie ein neues Konto
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Anmelden</TabsTrigger>
-                <TabsTrigger value="signup">Registrieren</TabsTrigger>
-              </TabsList>
 
-              <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">E-Mail</Label>
-                    <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="ihre.email@beispiel.de"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Passwort</Label>
-                    <Input
-                      id="signin-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Wird angemeldet..." : "Anmelden"}
-                  </Button>
-                </form>
-              </TabsContent>
+            {/* Sign In Form */}
+            {activeTab === "signin" && (
+              <form onSubmit={handleSignIn} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="signin-email" className="text-sm font-medium">E-Mail</Label>
+                  <Input
+                    id="signin-email"
+                    type="email"
+                    placeholder="ihre.email@beispiel.de"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signin-password" className="text-sm font-medium">Passwort</Label>
+                  <Input
+                    id="signin-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 rounded-xl font-medium text-base shadow-sm hover:shadow-md transition-all duration-200" 
+                  disabled={loading}
+                >
+                  {loading ? "Wird angemeldet..." : "Anmelden"}
+                </Button>
+              </form>
+            )}
 
-              <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Vollständiger Name</Label>
-                    <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="Max Mustermann"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">E-Mail</Label>
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="ihre.email@beispiel.de"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Passwort</Label>
-                    <Input
-                      id="signup-password"
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={loading}
-                      minLength={6}
-                    />
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Wird registriert..." : "Registrieren"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+            {/* Sign Up Form */}
+            {activeTab === "signup" && (
+              <form onSubmit={handleSignUp} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-name" className="text-sm font-medium">Vollständiger Name</Label>
+                  <Input
+                    id="signup-name"
+                    type="text"
+                    placeholder="Max Mustermann"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email" className="text-sm font-medium">E-Mail</Label>
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    placeholder="ihre.email@beispiel.de"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password" className="text-sm font-medium">Passwort</Label>
+                  <Input
+                    id="signup-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    minLength={6}
+                    className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 rounded-xl font-medium text-base shadow-sm hover:shadow-md transition-all duration-200" 
+                  disabled={loading}
+                >
+                  {loading ? "Wird registriert..." : "Kostenlos registrieren"}
+                </Button>
+              </form>
+            )}
+
+            {/* Privacy Notice */}
+            <p className="text-xs text-muted-foreground text-center mt-6">
+              Mit Ihrer Anmeldung akzeptieren Sie unsere{" "}
+              <Link to="/privacy" className="text-primary hover:underline">
+                Datenschutzerklärung
+              </Link>
+              .
+            </p>
           </CardContent>
         </Card>
       </div>
