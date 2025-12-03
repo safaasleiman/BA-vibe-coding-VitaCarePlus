@@ -3,14 +3,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Trash2, AlertCircle } from "lucide-react";
+import { Calendar, FileText, Trash2, AlertCircle, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { EditVaccinationDialog } from "./EditVaccinationDialog";
+import { getEncryptionKey, decryptText, isEncrypted } from "@/lib/encryption";
 
 interface Vaccination {
   id: string;
+  user_id: string;
   vaccine_name: string;
   vaccine_type: string;
   vaccination_date: string;
@@ -27,6 +29,7 @@ interface VaccinationListProps {
 
 export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationListProps) => {
   const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
+  const [decryptedNotes, setDecryptedNotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'due'>('all');
   const { toast } = useToast();
@@ -41,6 +44,18 @@ export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationList
 
       if (error) throw error;
       setVaccinations(data || []);
+
+      // Decrypt notes
+      if (data) {
+        const key = await getEncryptionKey(userId);
+        const decrypted: Record<string, string> = {};
+        for (const vax of data) {
+          if (vax.notes) {
+            decrypted[vax.id] = await decryptText(vax.notes, key);
+          }
+        }
+        setDecryptedNotes(decrypted);
+      }
     } catch (error: any) {
       toast({
         title: "Fehler beim Laden",
@@ -195,8 +210,9 @@ export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationList
                   )}
 
                   {vaccination.notes && (
-                    <p className="text-sm text-muted-foreground italic">
-                      {vaccination.notes}
+                    <p className="text-sm text-muted-foreground italic flex items-center gap-1">
+                      {isEncrypted(vaccination.notes) && <Lock className="w-3 h-3" />}
+                      {decryptedNotes[vaccination.id] || vaccination.notes}
                     </p>
                   )}
                 </div>

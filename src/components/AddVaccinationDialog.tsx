@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Lock } from "lucide-react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { getEncryptionKey, encryptText } from "@/lib/encryption";
 
 interface AddVaccinationDialogProps {
   open: boolean;
@@ -22,6 +23,7 @@ interface AddVaccinationDialogProps {
 
 export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccinationAdded }: AddVaccinationDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);
   const { toast } = useToast();
   const [vaccinationDate, setVaccinationDate] = useState<Date>();
   const [vaccinationDateInput, setVaccinationDateInput] = useState("");
@@ -34,6 +36,13 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
     batch_number: "",
     notes: "",
   });
+
+  // Load encryption key
+  useEffect(() => {
+    if (userId) {
+      getEncryptionKey(userId).then(setEncryptionKey);
+    }
+  }, [userId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +59,12 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
     setLoading(true);
 
     try {
+      // Encrypt notes if encryption key is available
+      let encryptedNotes = formData.notes || null;
+      if (formData.notes && encryptionKey) {
+        encryptedNotes = await encryptText(formData.notes, encryptionKey);
+      }
+
       const { error } = await supabase.from("vaccinations").insert({
         user_id: userId,
         vaccine_name: formData.vaccine_name,
@@ -58,7 +73,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
         next_due_date: nextDueDate ? format(nextDueDate, "yyyy-MM-dd") : null,
         doctor_name: formData.doctor_name || null,
         batch_number: formData.batch_number || null,
-        notes: formData.notes || null,
+        notes: encryptedNotes,
       });
 
       if (error) throw error;
@@ -269,7 +284,13 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notizen</Label>
+            <Label htmlFor="notes" className="flex items-center gap-2">
+              Notizen
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                verschlüsselt
+              </span>
+            </Label>
             <Textarea
               id="notes"
               placeholder="Zusätzliche Informationen..."
