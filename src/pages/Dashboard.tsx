@@ -343,6 +343,7 @@ const Dashboard = () => {
                   childId={selectedChildId}
                   childName={children.find(c => c.id === selectedChildId)?.first_name || ''}
                   refreshTrigger={examinationsRefreshTrigger}
+                  onExaminationUpdated={() => setExaminationsRefreshTrigger(prev => prev + 1)}
                 />
               </div>
             </div>

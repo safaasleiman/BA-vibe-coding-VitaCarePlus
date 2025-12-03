@@ -25,9 +25,10 @@ interface UExaminationsListProps {
   childId?: string;
   childName?: string;
   refreshTrigger: number;
+  onExaminationUpdated?: () => void;
 }
 
-export function UExaminationsList({ childId, childName, refreshTrigger }: UExaminationsListProps) {
+export function UExaminationsList({ childId, childName, refreshTrigger, onExaminationUpdated }: UExaminationsListProps) {
   const [examinations, setExaminations] = useState<UExamination[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -154,7 +155,10 @@ export function UExaminationsList({ childId, childName, refreshTrigger }: UExami
                       </Button>
                       <AddUExaminationDialog 
                         examination={exam}
-                        onExaminationUpdated={fetchExaminations}
+                        onExaminationUpdated={() => {
+                          fetchExaminations();
+                          onExaminationUpdated?.();
+                        }}
                       />
                     </div>
                   </TableCell>
