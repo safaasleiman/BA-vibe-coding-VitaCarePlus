@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { ReminderBanner } from "@/components/ReminderBanner";
 import { VaccinationReminderBanner } from "@/components/VaccinationReminderBanner";
 import { OverviewStatsCard } from "@/components/OverviewStatsCard";
+import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { getUpcomingExaminations, ReminderInfo, getUpcomingVaccinations, VaccinationReminderInfo, Vaccination } from "@/lib/reminderUtils";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -200,10 +201,13 @@ const Dashboard = () => {
                 <p className="text-sm text-muted-foreground">Willkommen zurück!</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Abmelden
-            </Button>
+            <div className="flex items-center gap-2">
+              <PushNotificationToggle />
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Abmelden
+              </Button>
+            </div>
           </div>
         </div>
       </header>
