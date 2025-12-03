@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Camera, Upload, Loader2, Check, X, ImageIcon, Trash2 } from "lucide-react";
+import { Camera, Loader2, Check, ImageIcon, Trash2 } from "lucide-react";
 import { format, parse, isValid } from "date-fns";
 import { de } from "date-fns/locale";
 
@@ -37,6 +37,7 @@ export const ScanVaccinationDialog = ({
   const [notes, setNotes] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const resetState = () => {
@@ -225,40 +226,64 @@ export const ScanVaccinationDialog = ({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Hidden file inputs */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+
           {/* Upload Area */}
           {!imagePreview && (
-            <div
-              className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Foto hochladen</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Klicken oder Bild hierher ziehen
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={(e) => {
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}>
-                    <ImageIcon className="w-4 h-4 mr-2" />
-                    Datei auswählen
-                  </Button>
-                </div>
+            <div className="space-y-4">
+              {/* Camera and Gallery Buttons */}
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  className="flex flex-col items-center gap-3 p-6 border-2 border-dashed border-border rounded-lg hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                >
+                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Camera className="w-7 h-7 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-foreground">Foto aufnehmen</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Kamera öffnen
+                    </p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex flex-col items-center gap-3 p-6 border-2 border-dashed border-border rounded-lg hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                >
+                  <div className="w-14 h-14 rounded-full bg-secondary/50 flex items-center justify-center">
+                    <ImageIcon className="w-7 h-7 text-secondary-foreground" />
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium text-foreground">Aus Galerie</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Bild auswählen
+                    </p>
+                  </div>
+                </button>
               </div>
+
+              <p className="text-center text-sm text-muted-foreground">
+                Für beste Ergebnisse: Gute Beleuchtung, gesamte Seite sichtbar
+              </p>
             </div>
           )}
 
