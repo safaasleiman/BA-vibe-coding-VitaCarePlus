@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock } from "lucide-react";
+import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock, Camera } from "lucide-react";
 import vitacareLogo from "@/assets/vitacare-logo.png";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
+import { ScanVaccinationDialog } from "@/components/ScanVaccinationDialog";
 import { ProfileCard } from "@/components/ProfileCard";
 import { ChildrenList } from "@/components/ChildrenList";
 import { UExaminationsList } from "@/components/UExaminationsList";
@@ -25,6 +26,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showScanDialog, setShowScanDialog] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string | undefined>();
   const [childrenRefreshTrigger, setChildrenRefreshTrigger] = useState(0);
   const [examinationsRefreshTrigger, setExaminationsRefreshTrigger] = useState(0);
@@ -290,10 +292,16 @@ const Dashboard = () => {
                           Verwalten Sie Ihre Impfnachweise
                         </CardDescription>
                       </div>
-                      <Button onClick={() => setShowAddDialog(true)} size="sm">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Hinzufügen
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button onClick={() => setShowScanDialog(true)} variant="outline" size="sm">
+                          <Camera className="w-4 h-4 mr-2" />
+                          Scannen
+                        </Button>
+                        <Button onClick={() => setShowAddDialog(true)} size="sm">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Hinzufügen
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -360,6 +368,13 @@ const Dashboard = () => {
         onOpenChange={setShowAddDialog}
         userId={user?.id}
         onVaccinationAdded={() => setVaccinationsRefreshTrigger(prev => prev + 1)}
+      />
+
+      <ScanVaccinationDialog
+        open={showScanDialog}
+        onOpenChange={setShowScanDialog}
+        userId={user?.id}
+        onVaccinationsAdded={() => setVaccinationsRefreshTrigger(prev => prev + 1)}
       />
     </div>
   );
