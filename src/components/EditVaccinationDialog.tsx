@@ -8,13 +8,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarIcon, Pencil } from "lucide-react";
+import { CalendarIcon, Pencil, Lock } from "lucide-react";
 import { format, parse } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { getEncryptionKey, encryptText, decryptText } from "@/lib/encryption";
 
 interface Vaccination {
   id: string;
+  user_id?: string;
   vaccine_name: string;
   vaccine_type: string;
   vaccination_date: string;
@@ -32,6 +34,7 @@ interface EditVaccinationDialogProps {
 export const EditVaccinationDialog = ({ vaccination, onVaccinationUpdated }: EditVaccinationDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);
   const { toast } = useToast();
   
   const [vaccinationDate, setVaccinationDate] = useState<Date>();
@@ -46,29 +49,47 @@ export const EditVaccinationDialog = ({ vaccination, onVaccinationUpdated }: Edi
     notes: "",
   });
 
+  // Load encryption key
   useEffect(() => {
-    if (open && vaccination) {
-      setFormData({
-        vaccine_name: vaccination.vaccine_name,
-        vaccine_type: vaccination.vaccine_type,
-        doctor_name: vaccination.doctor_name || "",
-        batch_number: vaccination.batch_number || "",
-        notes: vaccination.notes || "",
-      });
-      
-      const vaxDate = new Date(vaccination.vaccination_date);
-      setVaccinationDate(vaxDate);
-      setVaccinationDateInput(format(vaxDate, "dd.MM.yyyy"));
-      
-      if (vaccination.next_due_date) {
-        const nextDate = new Date(vaccination.next_due_date);
-        setNextDueDate(nextDate);
-        setNextDueDateInput(format(nextDate, "dd.MM.yyyy"));
-      } else {
-        setNextDueDate(undefined);
-        setNextDueDateInput("");
-      }
+    if (vaccination.user_id) {
+      getEncryptionKey(vaccination.user_id).then(setEncryptionKey);
     }
+  }, [vaccination.user_id]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (open && vaccination) {
+        let decryptedNotes = vaccination.notes || "";
+        
+        // Decrypt notes if encrypted
+        if (vaccination.notes && vaccination.user_id) {
+          const key = await getEncryptionKey(vaccination.user_id);
+          decryptedNotes = await decryptText(vaccination.notes, key);
+        }
+
+        setFormData({
+          vaccine_name: vaccination.vaccine_name,
+          vaccine_type: vaccination.vaccine_type,
+          doctor_name: vaccination.doctor_name || "",
+          batch_number: vaccination.batch_number || "",
+          notes: decryptedNotes,
+        });
+        
+        const vaxDate = new Date(vaccination.vaccination_date);
+        setVaccinationDate(vaxDate);
+        setVaccinationDateInput(format(vaxDate, "dd.MM.yyyy"));
+        
+        if (vaccination.next_due_date) {
+          const nextDate = new Date(vaccination.next_due_date);
+          setNextDueDate(nextDate);
+          setNextDueDateInput(format(nextDate, "dd.MM.yyyy"));
+        } else {
+          setNextDueDate(undefined);
+          setNextDueDateInput("");
+        }
+      }
+    };
+    loadData();
   }, [open, vaccination]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +107,12 @@ export const EditVaccinationDialog = ({ vaccination, onVaccinationUpdated }: Edi
     setLoading(true);
 
     try {
+      // Encrypt notes if encryption key is available
+      let encryptedNotes = formData.notes || null;
+      if (formData.notes && encryptionKey) {
+        encryptedNotes = await encryptText(formData.notes, encryptionKey);
+      }
+
       const { error } = await supabase
         .from("vaccinations")
         .update({
@@ -95,7 +122,7 @@ export const EditVaccinationDialog = ({ vaccination, onVaccinationUpdated }: Edi
           next_due_date: nextDueDate ? format(nextDueDate, "yyyy-MM-dd") : null,
           doctor_name: formData.doctor_name || null,
           batch_number: formData.batch_number || null,
-          notes: formData.notes || null,
+          notes: encryptedNotes,
         })
         .eq("id", vaccination.id);
 
@@ -293,7 +320,13 @@ export const EditVaccinationDialog = ({ vaccination, onVaccinationUpdated }: Edi
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_notes">Notizen</Label>
+            <Label htmlFor="edit_notes" className="flex items-center gap-2">
+              Notizen
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                verschlüsselt
+              </span>
+            </Label>
             <Textarea
               id="edit_notes"
               placeholder="Zusätzliche Informationen..."

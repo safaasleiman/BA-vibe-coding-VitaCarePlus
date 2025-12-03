@@ -1,4 +1,6 @@
 import { VitaCareLogo } from "@/components/VitaCareLogo";
+import { Link } from "react-router-dom";
+import { Shield } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -7,9 +9,19 @@ export const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <VitaCareLogo size="md" />
           
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Vita Care+. Alle Rechte vorbehalten.
-          </p>
+          <div className="flex items-center gap-6">
+            <Link 
+              to="/datenschutz" 
+              className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
+            >
+              <Shield className="w-3 h-3" />
+              Datenschutz
+            </Link>
+            
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Vita Care+. Alle Rechte vorbehalten.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
