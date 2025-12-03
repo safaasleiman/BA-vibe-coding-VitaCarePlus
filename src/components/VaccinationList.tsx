@@ -7,6 +7,7 @@ import { Calendar, FileText, Trash2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
+import { EditVaccinationDialog } from "./EditVaccinationDialog";
 
 interface Vaccination {
   id: string;
@@ -200,14 +201,23 @@ export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationList
                   )}
                 </div>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDelete(vaccination.id)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <EditVaccinationDialog 
+                    vaccination={vaccination}
+                    onVaccinationUpdated={() => {
+                      fetchVaccinations();
+                      onVaccinationChange?.();
+                    }}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(vaccination.id)}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
