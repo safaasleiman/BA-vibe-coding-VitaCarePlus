@@ -169,7 +169,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
                       <CalendarIcon className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="center" side="top">
+                  <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
                     <Calendar
                       mode="single"
                       selected={vaccinationDate}
@@ -226,7 +226,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
                       <CalendarIcon className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="center" side="top">
+                  <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
                     <Calendar
                       mode="single"
                       selected={nextDueDate}
