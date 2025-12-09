@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { ReminderBanner } from "@/components/ReminderBanner";
 import { VaccinationReminderBanner } from "@/components/VaccinationReminderBanner";
+import { CombinedOverviewCard } from "@/components/CombinedOverviewCard";
 import { OverviewStatsCard } from "@/components/OverviewStatsCard";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
 import { getUpcomingExaminations, ReminderInfo, getUpcomingVaccinations, VaccinationReminderInfo, Vaccination } from "@/lib/reminderUtils";
@@ -216,6 +217,16 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Kombinierte Terminübersicht */}
+        <div className="mb-6">
+          <CombinedOverviewCard
+            vaccinations={vaccinations}
+            vaccinationReminders={vaccinationReminders}
+            examinations={examinations}
+            children={children}
+          />
+        </div>
+
         {/* Reminder Banner */}
         {reminders.length > 0 && (
           <div className="mb-6">
