@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Edit } from "lucide-react";
+import { CalendarIcon, Edit, X } from "lucide-react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
@@ -138,6 +138,21 @@ export function AddUExaminationDialog({ examination, onExaminationUpdated }: Add
                   />
                 </PopoverContent>
               </Popover>
+              {actualDate && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setActualDate(undefined);
+                    setDateInput("");
+                  }}
+                  title="Datum zurücksetzen"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             {actualDate && (
               <p className="text-sm text-muted-foreground mt-1">
