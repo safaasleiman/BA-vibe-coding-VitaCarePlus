@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      check_ups: {
+        Row: {
+          actual_date: string | null
+          check_up_type: string
+          created_at: string
+          doctor_name: string | null
+          due_date: string
+          id: string
+          interval_months: number
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          actual_date?: string | null
+          check_up_type: string
+          created_at?: string
+          doctor_name?: string | null
+          due_date: string
+          id?: string
+          interval_months?: number
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          actual_date?: string | null
+          check_up_type?: string
+          created_at?: string
+          doctor_name?: string | null
+          due_date?: string
+          id?: string
+          interval_months?: number
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       children: {
         Row: {
           created_at: string
@@ -49,6 +88,7 @@ export type Database = {
           created_at: string | null
           date_of_birth: string | null
           full_name: string | null
+          gender: string | null
           id: string
           location: string | null
           updated_at: string | null
@@ -57,6 +97,7 @@ export type Database = {
           created_at?: string | null
           date_of_birth?: string | null
           full_name?: string | null
+          gender?: string | null
           id: string
           location?: string | null
           updated_at?: string | null
@@ -65,6 +106,7 @@ export type Database = {
           created_at?: string | null
           date_of_birth?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
           location?: string | null
           updated_at?: string | null
