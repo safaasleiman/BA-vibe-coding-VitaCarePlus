@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import vitacareLogo from "@/assets/vitacare-logo.png";
 
@@ -12,6 +19,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [gender, setGender] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   const navigate = useNavigate();
@@ -37,6 +45,15 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!gender) {
+      toast({
+        title: "Geschlecht auswählen",
+        description: "Bitte wählen Sie Ihr Geschlecht für personalisierte Vorsorgeempfehlungen.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -47,6 +64,7 @@ const Auth = () => {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             full_name: fullName,
+            gender: gender,
           },
         },
       });
@@ -220,10 +238,26 @@ const Auth = () => {
                     className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-gender" className="text-sm font-medium">Geschlecht *</Label>
+                  <Select value={gender} onValueChange={setGender} disabled={loading}>
+                    <SelectTrigger className="h-11 rounded-xl border-border/60 focus:border-primary focus:ring-primary/20">
+                      <SelectValue placeholder="Geschlecht auswählen" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="female">Weiblich</SelectItem>
+                      <SelectItem value="male">Männlich</SelectItem>
+                      <SelectItem value="diverse">Divers</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Für personalisierte Vorsorge-Empfehlungen
+                  </p>
+                </div>
                 <Button 
                   type="submit" 
                   className="w-full h-11 rounded-xl font-medium text-base shadow-sm hover:shadow-md transition-all duration-200" 
-                  disabled={loading}
+                  disabled={loading || !gender}
                 >
                   {loading ? "Wird registriert..." : "Kostenlos registrieren"}
                 </Button>
