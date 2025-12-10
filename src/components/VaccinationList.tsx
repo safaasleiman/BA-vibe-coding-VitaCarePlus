@@ -32,10 +32,11 @@ interface Vaccination {
 interface VaccinationListProps {
   userId: string;
   children?: Child[];
+  filterChildId?: string;
   onVaccinationChange?: () => void;
 }
 
-export const VaccinationList = ({ userId, children = [], onVaccinationChange }: VaccinationListProps) => {
+export const VaccinationList = ({ userId, children = [], filterChildId, onVaccinationChange }: VaccinationListProps) => {
   const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
   const [decryptedNotes, setDecryptedNotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -171,6 +172,13 @@ export const VaccinationList = ({ userId, children = [], onVaccinationChange }: 
 
       {vaccinations
         .filter((vaccination) => {
+          // First apply person filter
+          if (filterChildId !== undefined) {
+            if (filterChildId === 'self' && vaccination.child_id) return false;
+            if (filterChildId !== 'self' && vaccination.child_id !== filterChildId) return false;
+          }
+          
+          // Then apply due filter
           if (filter === 'all') return true;
           const isDue = vaccination.next_due_date && 
             new Date(vaccination.next_due_date) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
