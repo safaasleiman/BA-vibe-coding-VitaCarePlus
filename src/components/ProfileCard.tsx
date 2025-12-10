@@ -4,20 +4,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { User, Edit2, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ProfileCardProps {
   userId: string;
+  onProfileUpdated?: () => void;
 }
 
 interface Profile {
   full_name: string | null;
   date_of_birth: string | null;
   location: string | null;
+  gender: string | null;
 }
 
-export const ProfileCard = ({ userId }: ProfileCardProps) => {
+export const ProfileCard = ({ userId, onProfileUpdated }: ProfileCardProps) => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -25,6 +34,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
     full_name: "",
     date_of_birth: "",
     location: "",
+    gender: "",
   });
   const { toast } = useToast();
 
@@ -75,6 +85,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
         title: "Profil aktualisiert",
         description: "Ihre Änderungen wurden gespeichert.",
       });
+      onProfileUpdated?.();
     } catch (error: any) {
       toast({
         title: "Fehler beim Speichern",
@@ -87,7 +98,7 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
   };
 
   const handleCancel = () => {
-    setFormData(profile || { full_name: "", date_of_birth: "", location: "" });
+    setFormData(profile || { full_name: "", date_of_birth: "", location: "", gender: "" });
     setEditing(false);
   };
 
@@ -162,6 +173,33 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="gender">Geschlecht</Label>
+          {editing ? (
+            <Select
+              value={formData.gender || ""}
+              onValueChange={(value) => setFormData({ ...formData, gender: value })}
+              disabled={loading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Geschlecht auswählen" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="female">Weiblich</SelectItem>
+                <SelectItem value="male">Männlich</SelectItem>
+                <SelectItem value="diverse">Divers</SelectItem>
+              </SelectContent>
+            </Select>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {profile?.gender === 'female' ? 'Weiblich' : 
+               profile?.gender === 'male' ? 'Männlich' : 
+               profile?.gender === 'diverse' ? 'Divers' : 
+               'Nicht angegeben'}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="location">Wohnort</Label>
           {editing ? (
             <Input
@@ -177,6 +215,12 @@ export const ProfileCard = ({ userId }: ProfileCardProps) => {
             </p>
           )}
         </div>
+
+        {!editing && (!profile?.gender || !profile?.date_of_birth) && (
+          <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded mt-2">
+            Bitte vervollständigen Sie Ihr Profil für personalisierte Check-up-Empfehlungen.
+          </div>
+        )}
       </CardContent>
     </Card>
   );

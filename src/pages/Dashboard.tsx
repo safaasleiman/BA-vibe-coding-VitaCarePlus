@@ -309,7 +309,21 @@ const Dashboard = () => {
               />
               
               {/* Profile Card */}
-              <ProfileCard userId={user?.id} />
+              <ProfileCard 
+                userId={user?.id} 
+                onProfileUpdated={() => {
+                  // Refresh profile data
+                  supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user?.id)
+                    .maybeSingle()
+                    .then(({ data }) => {
+                      if (data) setProfile(data);
+                    });
+                  setCheckUpsRefreshTrigger(prev => prev + 1);
+                }}
+              />
             </div>
           </div>
 

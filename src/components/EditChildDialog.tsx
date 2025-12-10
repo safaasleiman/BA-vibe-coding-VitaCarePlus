@@ -5,6 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
@@ -17,6 +24,7 @@ interface Child {
   first_name: string;
   last_name: string;
   date_of_birth: string;
+  gender?: string | null;
 }
 
 interface EditChildDialogProps {
@@ -31,6 +39,7 @@ export function EditChildDialog({ child, open, onOpenChange, onChildUpdated }: E
   const [lastName, setLastName] = useState(child.last_name);
   const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date(child.date_of_birth));
   const [dateInput, setDateInput] = useState(format(new Date(child.date_of_birth), "dd.MM.yyyy"));
+  const [gender, setGender] = useState<string>(child.gender || "");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -38,6 +47,7 @@ export function EditChildDialog({ child, open, onOpenChange, onChildUpdated }: E
     setLastName(child.last_name);
     setDateOfBirth(new Date(child.date_of_birth));
     setDateInput(format(new Date(child.date_of_birth), "dd.MM.yyyy"));
+    setGender(child.gender || "");
   }, [child]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,6 +67,7 @@ export function EditChildDialog({ child, open, onOpenChange, onChildUpdated }: E
           first_name: firstName,
           last_name: lastName,
           date_of_birth: format(dateOfBirth, "yyyy-MM-dd"),
+          gender: gender || null,
         })
         .eq("id", child.id);
 
@@ -155,6 +166,19 @@ export function EditChildDialog({ child, open, onOpenChange, onChildUpdated }: E
                 {format(dateOfBirth, "dd.MM.yyyy")}
               </p>
             )}
+          </div>
+          <div>
+            <Label>Geschlecht</Label>
+            <Select value={gender} onValueChange={setGender}>
+              <SelectTrigger>
+                <SelectValue placeholder="Geschlecht auswählen" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="female">Weiblich</SelectItem>
+                <SelectItem value="male">Männlich</SelectItem>
+                <SelectItem value="diverse">Divers</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Wird gespeichert..." : "Änderungen speichern"}
