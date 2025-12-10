@@ -34,7 +34,15 @@ export const DashboardSidebar = ({
           className="space-y-2"
         >
           {/* All option */}
-          <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+          <div 
+            className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-300 ${
+              selectedFilter === "all" 
+                ? "bg-emerald-100 dark:bg-emerald-900/30" 
+                : selectedFilter !== "all" && selectedFilter !== "self" 
+                  ? "opacity-40" 
+                  : "hover:bg-muted/50"
+            }`}
+          >
             <RadioGroupItem value="all" id="filter-all" />
             <Label 
               htmlFor="filter-all" 
@@ -45,7 +53,15 @@ export const DashboardSidebar = ({
           </div>
 
           {/* User option */}
-          <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+          <div 
+            className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-300 ${
+              selectedFilter === "self" 
+                ? "bg-emerald-100 dark:bg-emerald-900/30" 
+                : selectedFilter !== "all" && selectedFilter !== "self" 
+                  ? "opacity-40" 
+                  : "hover:bg-muted/50"
+            }`}
+          >
             <RadioGroupItem value="self" id="filter-self" />
             <Label 
               htmlFor="filter-self" 
@@ -60,7 +76,13 @@ export const DashboardSidebar = ({
           {children.map((child) => (
             <div 
               key={child.id} 
-              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+              className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-300 ${
+                selectedFilter === child.id 
+                  ? "bg-emerald-100 dark:bg-emerald-900/30" 
+                  : selectedFilter !== "all" 
+                    ? "opacity-40" 
+                    : "hover:bg-muted/50"
+              }`}
             >
               <RadioGroupItem value={child.id} id={`filter-${child.id}`} />
               <Label 
