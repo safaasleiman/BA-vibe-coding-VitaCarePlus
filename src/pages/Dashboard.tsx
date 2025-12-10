@@ -276,15 +276,6 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Kombinierte Terminübersicht - nur bei U-Untersuchungen sichtbar */}
-        <div className={`mb-6 transition-all duration-300 ${activeTab === "children" ? "opacity-100" : "opacity-30 pointer-events-none"}`}>
-          <CombinedOverviewCard
-            vaccinations={vaccinations}
-            vaccinationReminders={vaccinationReminders}
-            examinations={examinations}
-            children={children}
-          />
-        </div>
 
         {/* Reminder Banner */}
         {filteredReminders.length > 0 && (
@@ -330,7 +321,18 @@ const Dashboard = () => {
           {/* Main Content Area */}
           <div className="flex-1 min-w-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 max-w-lg mx-auto">
+              <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
+                <TabsTrigger 
+                  value="overview" 
+                  className={`relative transition-all duration-300 ${
+                    activeTab === "overview" 
+                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                      : "opacity-50"
+                  }`}
+                >
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Übersicht
+                </TabsTrigger>
                 <TabsTrigger 
                   value="vaccinations" 
                   className={`relative transition-all duration-300 ${
@@ -381,6 +383,15 @@ const Dashboard = () => {
                   Check-ups
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="overview" className="space-y-6">
+                <CombinedOverviewCard
+                  vaccinations={vaccinations}
+                  vaccinationReminders={vaccinationReminders}
+                  examinations={examinations}
+                  children={children}
+                />
+              </TabsContent>
 
               <TabsContent value="vaccinations" className="space-y-6">
                 {/* Vaccination Reminder Banner */}
