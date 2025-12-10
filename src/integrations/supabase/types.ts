@@ -222,6 +222,7 @@ export type Database = {
       vaccinations: {
         Row: {
           batch_number: string | null
+          child_id: string | null
           created_at: string | null
           doctor_name: string | null
           id: string
@@ -235,6 +236,7 @@ export type Database = {
         }
         Insert: {
           batch_number?: string | null
+          child_id?: string | null
           created_at?: string | null
           doctor_name?: string | null
           id?: string
@@ -248,6 +250,7 @@ export type Database = {
         }
         Update: {
           batch_number?: string | null
+          child_id?: string | null
           created_at?: string | null
           doctor_name?: string | null
           id?: string
@@ -259,7 +262,15 @@ export type Database = {
           vaccine_name?: string
           vaccine_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "vaccinations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
