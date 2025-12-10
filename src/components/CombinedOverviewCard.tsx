@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, FileText, Clock, AlertCircle, Syringe, ClipboardList } from "lucide-react";
+import { Calendar, FileText, Clock, AlertCircle, Syringe, ClipboardList, User, Baby } from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -166,7 +166,13 @@ export const CombinedOverviewCard = ({
                     <Card key={v.id} className="border-red-200 dark:border-red-900">
                       <CardContent className="p-3">
                         <p className="font-medium text-sm">{v.vaccine_name}</p>
-                        <p className="text-xs text-muted-foreground">{v.vaccine_type}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>{v.vaccine_type}</span>
+                          <span className="flex items-center gap-1">
+                            {v.child_id ? <Baby className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                            {v.child_id ? getChildName(v.child_id) : "Für mich"}
+                          </span>
+                        </div>
                         {v.next_due_date && (
                           <p className="text-xs text-red-600 dark:text-red-400 mt-1">
                             {format(new Date(v.next_due_date), "dd.MM.yyyy", { locale: de })} ({getDaysUntil(v.next_due_date)})
@@ -189,7 +195,13 @@ export const CombinedOverviewCard = ({
                     <Card key={v.id} className="border-orange-200 dark:border-orange-900">
                       <CardContent className="p-3">
                         <p className="font-medium text-sm">{v.vaccine_name}</p>
-                        <p className="text-xs text-muted-foreground">{v.vaccine_type}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>{v.vaccine_type}</span>
+                          <span className="flex items-center gap-1">
+                            {v.child_id ? <Baby className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                            {v.child_id ? getChildName(v.child_id) : "Für mich"}
+                          </span>
+                        </div>
                         {v.next_due_date && (
                           <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
                             {format(new Date(v.next_due_date), "dd.MM.yyyy", { locale: de })} ({getDaysUntil(v.next_due_date)})

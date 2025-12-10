@@ -3,16 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, Trash2, AlertCircle, Lock } from "lucide-react";
+import { Calendar, FileText, Trash2, AlertCircle, Lock, User, Baby } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { EditVaccinationDialog } from "./EditVaccinationDialog";
 import { getEncryptionKey, decryptText, isEncrypted } from "@/lib/encryption";
 
+interface Child {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
 interface Vaccination {
   id: string;
   user_id: string;
+  child_id: string | null;
   vaccine_name: string;
   vaccine_type: string;
   vaccination_date: string;
@@ -24,15 +31,22 @@ interface Vaccination {
 
 interface VaccinationListProps {
   userId: string;
+  children?: Child[];
   onVaccinationChange?: () => void;
 }
 
-export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationListProps) => {
+export const VaccinationList = ({ userId, children = [], onVaccinationChange }: VaccinationListProps) => {
   const [vaccinations, setVaccinations] = useState<Vaccination[]>([]);
   const [decryptedNotes, setDecryptedNotes] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'due'>('all');
   const { toast } = useToast();
+
+  // Create a lookup map for children
+  const childrenMap = children.reduce((acc, child) => {
+    acc[child.id] = child;
+    return acc;
+  }, {} as Record<string, Child>);
 
   const fetchVaccinations = async () => {
     try {
@@ -96,6 +110,22 @@ export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationList
         variant: "destructive",
       });
     }
+  };
+
+  const getPersonLabel = (vaccination: Vaccination) => {
+    if (vaccination.child_id && childrenMap[vaccination.child_id]) {
+      const child = childrenMap[vaccination.child_id];
+      return {
+        name: `${child.first_name} ${child.last_name}`,
+        icon: Baby,
+        isChild: true
+      };
+    }
+    return {
+      name: "Für mich",
+      icon: User,
+      isChild: false
+    };
   };
 
   if (loading) {
@@ -165,18 +195,24 @@ export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationList
         .map((vaccination) => {
         const isDue = vaccination.next_due_date && 
           new Date(vaccination.next_due_date) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const person = getPersonLabel(vaccination);
+        const PersonIcon = person.icon;
 
         return (
           <Card key={vaccination.id} className="border-border/50 shadow-soft hover:shadow-medium transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-2 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-foreground">
                       {vaccination.vaccine_name}
                     </h3>
                     <Badge variant="secondary" className="text-xs">
                       {vaccination.vaccine_type}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs flex items-center gap-1">
+                      <PersonIcon className="w-3 h-3" />
+                      {person.name}
                     </Badge>
                     {isDue && (
                       <Badge variant="destructive" className="text-xs flex items-center gap-1">
@@ -220,6 +256,7 @@ export const VaccinationList = ({ userId, onVaccinationChange }: VaccinationList
                 <div className="flex items-center gap-1">
                   <EditVaccinationDialog 
                     vaccination={vaccination}
+                    children={children}
                     onVaccinationUpdated={() => {
                       fetchVaccinations();
                       onVaccinationChange?.();

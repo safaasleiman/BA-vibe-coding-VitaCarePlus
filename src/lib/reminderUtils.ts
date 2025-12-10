@@ -115,6 +115,7 @@ export interface Vaccination {
   vaccination_date: string;
   next_due_date: string | null;
   user_id: string;
+  child_id?: string | null;
 }
 
 export interface VaccinationReminderInfo {

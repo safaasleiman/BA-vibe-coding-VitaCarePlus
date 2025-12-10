@@ -317,7 +317,8 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <VaccinationList 
-                      userId={user?.id} 
+                      userId={user?.id}
+                      children={children}
                       onVaccinationChange={() => setVaccinationsRefreshTrigger(prev => prev + 1)}
                     />
                   </CardContent>
@@ -378,6 +379,7 @@ const Dashboard = () => {
         open={showAddDialog}
         onOpenChange={setShowAddDialog}
         userId={user?.id}
+        children={children}
         onVaccinationAdded={() => setVaccinationsRefreshTrigger(prev => prev + 1)}
       />
 

@@ -7,23 +7,32 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarIcon, Lock } from "lucide-react";
+import { CalendarIcon, Lock, User, Baby } from "lucide-react";
 import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { getEncryptionKey, encryptText } from "@/lib/encryption";
 
+interface Child {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
 interface AddVaccinationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
+  children?: Child[];
   onVaccinationAdded?: () => void;
 }
 
-export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccinationAdded }: AddVaccinationDialogProps) => {
+export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = [], onVaccinationAdded }: AddVaccinationDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [encryptionKey, setEncryptionKey] = useState<CryptoKey | null>(null);
+  const [selectedChildId, setSelectedChildId] = useState<string>("self");
   const { toast } = useToast();
   const [vaccinationDate, setVaccinationDate] = useState<Date>();
   const [vaccinationDateInput, setVaccinationDateInput] = useState("");
@@ -43,6 +52,24 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
       getEncryptionKey(userId).then(setEncryptionKey);
     }
   }, [userId]);
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      setSelectedChildId("self");
+      setFormData({
+        vaccine_name: "",
+        vaccine_type: "",
+        doctor_name: "",
+        batch_number: "",
+        notes: "",
+      });
+      setVaccinationDate(undefined);
+      setVaccinationDateInput("");
+      setNextDueDate(undefined);
+      setNextDueDateInput("");
+    }
+  }, [open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +94,7 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
 
       const { error } = await supabase.from("vaccinations").insert({
         user_id: userId,
+        child_id: selectedChildId === "self" ? null : selectedChildId,
         vaccine_name: formData.vaccine_name,
         vaccine_type: formData.vaccine_type,
         vaccination_date: format(vaccinationDate, "yyyy-MM-dd"),
@@ -83,18 +111,6 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
         description: "Die Impfung wurde erfolgreich gespeichert.",
       });
 
-      // Reset form and close dialog
-      setFormData({
-        vaccine_name: "",
-        vaccine_type: "",
-        doctor_name: "",
-        batch_number: "",
-        notes: "",
-      });
-      setVaccinationDate(undefined);
-      setVaccinationDateInput("");
-      setNextDueDate(undefined);
-      setNextDueDateInput("");
       onOpenChange(false);
       onVaccinationAdded?.();
     } catch (error: any) {
@@ -117,11 +133,37 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, onVaccination
             Neue Impfung hinzufügen
           </DialogTitle>
           <DialogDescription>
-            Tragen Sie die Details Ihrer Impfung ein
+            Tragen Sie die Details der Impfung ein
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Person Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="person">Für wen ist die Impfung? *</Label>
+            <Select value={selectedChildId} onValueChange={setSelectedChildId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Person auswählen" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="self">
+                  <span className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Für mich selbst
+                  </span>
+                </SelectItem>
+                {children.map((child) => (
+                  <SelectItem key={child.id} value={child.id}>
+                    <span className="flex items-center gap-2">
+                      <Baby className="w-4 h-4" />
+                      {child.first_name} {child.last_name}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="vaccine_name">Impfstoff *</Label>
             <Input
