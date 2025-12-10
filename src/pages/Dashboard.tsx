@@ -276,8 +276,8 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Kombinierte Terminübersicht */}
-        <div className="mb-6">
+        {/* Kombinierte Terminübersicht - nur bei U-Untersuchungen sichtbar */}
+        <div className={`mb-6 transition-all duration-300 ${activeTab === "children" ? "opacity-100" : "opacity-30 pointer-events-none"}`}>
           <CombinedOverviewCard
             vaccinations={vaccinations}
             vaccinationReminders={vaccinationReminders}
