@@ -331,7 +331,14 @@ const Dashboard = () => {
           <div className="flex-1 min-w-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-3 max-w-lg mx-auto">
-                <TabsTrigger value="vaccinations" className="relative">
+                <TabsTrigger 
+                  value="vaccinations" 
+                  className={`relative transition-all duration-300 ${
+                    activeTab === "vaccinations" 
+                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                      : "opacity-50"
+                  }`}
+                >
                   <Syringe className="w-4 h-4 mr-2" />
                   Impfungen
                   {filteredVaccinationReminders.length > 0 && (
@@ -343,7 +350,14 @@ const Dashboard = () => {
                     </Badge>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="children" className="relative">
+                <TabsTrigger 
+                  value="children" 
+                  className={`relative transition-all duration-300 ${
+                    activeTab === "children" 
+                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                      : "opacity-50"
+                  }`}
+                >
                   <Baby className="w-4 h-4 mr-2" />
                   U-Untersuchungen
                   {filteredReminders.length > 0 && (
@@ -355,7 +369,14 @@ const Dashboard = () => {
                     </Badge>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="checkups" className="relative">
+                <TabsTrigger 
+                  value="checkups" 
+                  className={`relative transition-all duration-300 ${
+                    activeTab === "checkups" 
+                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                      : "opacity-50"
+                  }`}
+                >
                   <Stethoscope className="w-4 h-4 mr-2" />
                   Check-ups
                 </TabsTrigger>
