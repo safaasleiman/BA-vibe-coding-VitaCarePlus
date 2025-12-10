@@ -19,9 +19,10 @@ interface ChildrenListProps {
   onChildSelect: (childId: string) => void;
   selectedChildId?: string;
   refreshTrigger: number;
+  highlightedChildId?: string; // The child to highlight based on filter
 }
 
-export function ChildrenList({ onChildSelect, selectedChildId, refreshTrigger }: ChildrenListProps) {
+export function ChildrenList({ onChildSelect, selectedChildId, refreshTrigger, highlightedChildId }: ChildrenListProps) {
   const [children, setChildren] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingChild, setEditingChild] = useState<Child | null>(null);
@@ -111,15 +112,24 @@ export function ChildrenList({ onChildSelect, selectedChildId, refreshTrigger }:
   return (
     <>
       <div className="space-y-3">
-        {children.map((child) => (
-          <Card
-            key={child.id}
-            className={cn(
-              "cursor-pointer transition-all hover:shadow-md",
-              selectedChildId === child.id && "ring-2 ring-primary"
-            )}
-            onClick={() => onChildSelect(child.id)}
-          >
+        {children.map((child) => {
+          const isHighlighted = !highlightedChildId || highlightedChildId === "all" || highlightedChildId === child.id;
+          const isActiveHighlight = highlightedChildId && highlightedChildId !== "all" && highlightedChildId !== "self" && highlightedChildId === child.id;
+          
+          return (
+            <Card
+              key={child.id}
+              className={cn(
+                "cursor-pointer transition-all duration-300",
+                isActiveHighlight 
+                  ? "bg-emerald-50 dark:bg-emerald-900/20 ring-2 ring-emerald-300 dark:ring-emerald-700 shadow-md" 
+                  : selectedChildId === child.id 
+                    ? "ring-2 ring-primary hover:shadow-md"
+                    : "hover:shadow-md",
+                !isHighlighted && "opacity-40"
+              )}
+              onClick={() => onChildSelect(child.id)}
+            >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div>
@@ -157,7 +167,8 @@ export function ChildrenList({ onChildSelect, selectedChildId, refreshTrigger }:
               </div>
             </CardHeader>
           </Card>
-        ))}
+          );
+        })}
       </div>
       
       {editingChild && (
