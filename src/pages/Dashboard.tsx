@@ -485,6 +485,7 @@ const Dashboard = () => {
                             }}
                             selectedChildId={selectedFilter !== "all" && selectedFilter !== "self" ? selectedFilter : selectedChildId}
                             refreshTrigger={childrenRefreshTrigger}
+                            highlightedChildId={selectedFilter}
                           />
                           <AddChildDialog 
                             onChildAdded={() => {
