@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock, Camera, Stethoscope } from "lucide-react";
+import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock, Camera, Stethoscope, Filter } from "lucide-react";
 import vitacareLogo from "@/assets/vitacare-logo.png";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
@@ -22,6 +22,8 @@ import { CombinedOverviewCard } from "@/components/CombinedOverviewCard";
 import { OverviewStatsCard } from "@/components/OverviewStatsCard";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { PushNotificationToggle } from "@/components/PushNotificationToggle";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { getUpcomingExaminations, ReminderInfo, getUpcomingVaccinations, VaccinationReminderInfo, Vaccination } from "@/lib/reminderUtils";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -252,34 +254,72 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted via-background to-secondary/30">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-soft overflow-hidden animate-scale-in">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-soft overflow-hidden animate-scale-in">
                 <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">Vita Care+</h1>
-                <p className="text-sm text-muted-foreground">Willkommen zurück!</p>
+                <h1 className="text-lg sm:text-xl font-bold text-foreground">Vita Care+</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Willkommen zurück!</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <PushNotificationToggle />
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Abmelden
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon" className="h-9 w-9 sm:h-auto sm:w-auto sm:px-3" onClick={handleSignOut}>
+                      <LogOut className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Abmelden</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="sm:hidden">
+                    <p>Abmelden</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+
+        {/* Mobile Filter Dropdown */}
+        <div className="lg:hidden mb-4">
+          <Select value={selectedFilter} onValueChange={setSelectedFilter}>
+            <SelectTrigger className="w-full h-11 bg-card">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-primary" />
+                <SelectValue placeholder="Filter wählen" />
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-card z-50">
+              <SelectItem value="all">Alle anzeigen</SelectItem>
+              <SelectItem value="self">
+                <span className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  {profile?.full_name || "Für mich"}
+                </span>
+              </SelectItem>
+              {children.map((child) => (
+                <SelectItem key={child.id} value={child.id}>
+                  <span className="flex items-center gap-2">
+                    <Baby className="w-4 h-4" />
+                    {child.first_name} {child.last_name}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Reminder Banner */}
         {filteredReminders.length > 0 && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <ReminderBanner
               reminders={filteredReminders}
               onDismiss={() => {}}
@@ -320,68 +360,104 @@ const Dashboard = () => {
 
           {/* Main Content Area */}
           <div className="flex-1 min-w-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
-                <TabsTrigger 
-                  value="overview" 
-                  className={`relative transition-all duration-300 ${
-                    activeTab === "overview" 
-                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
-                      : "opacity-50"
-                  }`}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Übersicht
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="vaccinations" 
-                  className={`relative transition-all duration-300 ${
-                    activeTab === "vaccinations" 
-                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
-                      : "opacity-50"
-                  }`}
-                >
-                  <Syringe className="w-4 h-4 mr-2" />
-                  Impfungen
-                  {filteredVaccinationReminders.length > 0 && (
-                    <Badge 
-                      variant="destructive" 
-                      className="ml-2 h-5 min-w-5 px-1.5 text-xs"
-                    >
-                      {filteredVaccinationReminders.length}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="children" 
-                  className={`relative transition-all duration-300 ${
-                    activeTab === "children" 
-                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
-                      : "opacity-50"
-                  }`}
-                >
-                  <Baby className="w-4 h-4 mr-2" />
-                  U-Untersuchungen
-                  {filteredReminders.length > 0 && (
-                    <Badge 
-                      variant="destructive" 
-                      className="ml-2 h-5 min-w-5 px-1.5 text-xs"
-                    >
-                      {filteredReminders.length}
-                    </Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="checkups" 
-                  className={`relative transition-all duration-300 ${
-                    activeTab === "checkups" 
-                      ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
-                      : "opacity-50"
-                  }`}
-                >
-                  <Stethoscope className="w-4 h-4 mr-2" />
-                  Check-ups
-                </TabsTrigger>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+              <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto h-11 sm:h-10">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value="overview" 
+                        className={`relative transition-all duration-300 h-10 px-2 sm:px-3 ${
+                          activeTab === "overview" 
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                            : "opacity-50"
+                        }`}
+                      >
+                        <Calendar className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Übersicht</span>
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent className="sm:hidden">
+                      <p>Übersicht</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value="vaccinations" 
+                        className={`relative transition-all duration-300 h-10 px-2 sm:px-3 ${
+                          activeTab === "vaccinations" 
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                            : "opacity-50"
+                        }`}
+                      >
+                        <Syringe className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Impfungen</span>
+                        {filteredVaccinationReminders.length > 0 && (
+                          <Badge 
+                            variant="destructive" 
+                            className="ml-1 sm:ml-2 h-5 min-w-5 px-1 sm:px-1.5 text-xs"
+                          >
+                            {filteredVaccinationReminders.length}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent className="sm:hidden">
+                      <p>Impfungen</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value="children" 
+                        className={`relative transition-all duration-300 h-10 px-2 sm:px-3 ${
+                          activeTab === "children" 
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                            : "opacity-50"
+                        }`}
+                      >
+                        <Baby className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">U-Untersuchungen</span>
+                        {filteredReminders.length > 0 && (
+                          <Badge 
+                            variant="destructive" 
+                            className="ml-1 sm:ml-2 h-5 min-w-5 px-1 sm:px-1.5 text-xs"
+                          >
+                            {filteredReminders.length}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent className="sm:hidden">
+                      <p>U-Untersuchungen</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value="checkups" 
+                        className={`relative transition-all duration-300 h-10 px-2 sm:px-3 ${
+                          activeTab === "checkups" 
+                            ? "bg-emerald-100 dark:bg-emerald-900/30 data-[state=active]:bg-emerald-100 dark:data-[state=active]:bg-emerald-900/30" 
+                            : "opacity-50"
+                        }`}
+                      >
+                        <Stethoscope className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Check-ups</span>
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent className="sm:hidden">
+                      <p>Check-ups</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -425,31 +501,51 @@ const Dashboard = () => {
                   {/* Right Column - Vaccinations */}
                   <div className="lg:col-span-2 space-y-6">
                     <Card className="shadow-soft border-border/50">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle className="flex items-center gap-2">
-                              <Syringe className="w-5 h-5 text-primary" />
-                              {selectedFilter === "all" 
-                                ? "Alle Impfungen" 
-                                : selectedFilter === "self" 
-                                  ? "Meine Impfungen"
-                                  : `Impfungen: ${children.find(c => c.id === selectedFilter)?.first_name || ''}`
-                              }
+                      <CardHeader className="pb-3 sm:pb-6">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0">
+                            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                              <Syringe className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                              <span className="truncate">
+                                {selectedFilter === "all" 
+                                  ? "Alle Impfungen" 
+                                  : selectedFilter === "self" 
+                                    ? "Meine Impfungen"
+                                    : `Impfungen: ${children.find(c => c.id === selectedFilter)?.first_name || ''}`
+                                }
+                              </span>
                             </CardTitle>
-                            <CardDescription>
+                            <CardDescription className="hidden sm:block">
                               Verwalten Sie Ihre Impfnachweise
                             </CardDescription>
                           </div>
-                          <div className="flex gap-2">
-                            <Button onClick={() => setShowScanDialog(true)} variant="outline" size="sm">
-                              <Camera className="w-4 h-4 mr-2" />
-                              Scannen
-                            </Button>
-                            <Button onClick={() => setShowAddDialog(true)} size="sm">
-                              <Plus className="w-4 h-4 mr-2" />
-                              Hinzufügen
-                            </Button>
+                          <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button onClick={() => setShowScanDialog(true)} variant="outline" size="icon" className="h-9 w-9 sm:h-auto sm:w-auto sm:px-3">
+                                    <Camera className="w-4 h-4 sm:mr-2" />
+                                    <span className="hidden sm:inline">Scannen</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="sm:hidden">
+                                  <p>Scannen</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button onClick={() => setShowAddDialog(true)} size="icon" className="h-9 w-9 sm:h-auto sm:w-auto sm:px-3">
+                                    <Plus className="w-4 h-4 sm:mr-2" />
+                                    <span className="hidden sm:inline">Hinzufügen</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="sm:hidden">
+                                  <p>Hinzufügen</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         </div>
                       </CardHeader>
