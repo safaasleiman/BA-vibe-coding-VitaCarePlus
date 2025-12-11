@@ -16,7 +16,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
     "Juli", "August", "September", "Oktober", "November", "Dezember"
   ];
 
-  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 105 }, (_, i) => currentYear + 4 - i);
 
   const handleMonthChange = (month: string) => {
     const newDate = new Date(currentMonth);
