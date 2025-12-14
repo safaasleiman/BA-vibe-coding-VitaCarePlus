@@ -139,8 +139,8 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 ring-2 ring-[hsl(160,45%,75%)]">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300 ring-1 ring-[hsl(160,45%,75%)]">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <Shield className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground text-base mb-1.5">DSGVO-konform</h3>
@@ -149,8 +149,8 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 ring-2 ring-[hsl(160,45%,75%)]">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300 ring-1 ring-[hsl(160,45%,75%)]">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <Users className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground text-base mb-1.5">Familienkalender</h3>
@@ -159,8 +159,8 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 ring-2 ring-[hsl(160,45%,75%)]">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300 ring-1 ring-[hsl(160,45%,75%)]">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground text-base mb-1.5">RKI-basiert</h3>
@@ -169,8 +169,8 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 ring-2 ring-[hsl(160,45%,75%)]">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300 ring-1 ring-[hsl(160,45%,75%)]">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <Calendar className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground text-base mb-1.5">Export-Funktion</h3>
@@ -179,8 +179,8 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 ring-2 ring-[hsl(160,45%,75%)]">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300 ring-1 ring-[hsl(160,45%,75%)]">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <Bell className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground text-base mb-1.5">Keine Termine verpassen</h3>
@@ -189,8 +189,8 @@ const Landing = () => {
               </p>
             </div>
 
-            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4 ring-2 ring-[hsl(160,45%,75%)]">
+            <div className="bg-card p-5 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300 ring-1 ring-[hsl(160,45%,75%)]">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                 <ClipboardList className="w-5 h-5 text-primary" />
               </div>
               <h3 className="font-semibold text-foreground text-base mb-1.5">Übersichtlich</h3>
