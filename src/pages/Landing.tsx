@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import heroImage from "@/assets/hero-vitacare.png";
+import heroSunburst from "@/assets/hero-sunburst.png";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -37,7 +38,19 @@ const Landing = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-32 pb-20 px-4">
-        <div className="absolute inset-0 bg-gradient-hero opacity-70"></div>
+        {/* Sunburst Background */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${heroSunburst})`,
+            backgroundPosition: 'top center',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            opacity: 0.25,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-hero opacity-40"></div>
         <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 animate-fade-in">
