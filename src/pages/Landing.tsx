@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, Bell, ClipboardList, Shield, Users, CheckCircle2 } from "lucide-react";
+import { Calendar, Bell, ClipboardList, Shield, Users, CheckCircle2, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
@@ -86,8 +86,8 @@ const Landing = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="hover-scale border-none shadow-card hover:shadow-card-hover transition-shadow">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="hover-scale shadow-card hover:shadow-card-hover transition-shadow ring-1 ring-[hsl(160,45%,75%)]">
               <CardHeader>
                 <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
                   <Calendar className="w-6 h-6 text-accent" />
@@ -99,7 +99,7 @@ const Landing = () => {
               </CardHeader>
             </Card>
 
-            <Card className="hover-scale border-none shadow-card hover:shadow-card-hover transition-shadow">
+            <Card className="hover-scale shadow-card hover:shadow-card-hover transition-shadow ring-1 ring-[hsl(160,45%,75%)]">
               <CardHeader>
                 <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
                   <Bell className="w-6 h-6 text-accent" />
@@ -111,7 +111,7 @@ const Landing = () => {
               </CardHeader>
             </Card>
 
-            <Card className="hover-scale border-none shadow-card hover:shadow-card-hover transition-shadow">
+            <Card className="hover-scale shadow-card hover:shadow-card-hover transition-shadow ring-1 ring-[hsl(160,45%,75%)]">
               <CardHeader>
                 <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
                   <ClipboardList className="w-6 h-6 text-accent" />
@@ -119,6 +119,18 @@ const Landing = () => {
                 <CardTitle className="text-foreground">Vorsorgeplan</CardTitle>
                 <CardDescription>
                   U-Untersuchungen für Kinder automatisch berechnet basierend auf RKI-Standards
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover-scale shadow-card hover:shadow-card-hover transition-shadow ring-1 ring-[hsl(160,45%,75%)]">
+              <CardHeader>
+                <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
+                  <HeartPulse className="w-6 h-6 text-accent" />
+                </div>
+                <CardTitle className="text-foreground">Meine Check-ups</CardTitle>
+                <CardDescription>
+                  Vorsorgeuntersuchungen basierend auf Ihrem Alter und Geschlecht
                 </CardDescription>
               </CardHeader>
             </Card>
