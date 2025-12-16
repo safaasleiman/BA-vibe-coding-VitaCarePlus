@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock, Camera, Stethoscope, Filter } from "lucide-react";
-import vitacareLogo from "@/assets/vitacare-logo-new.png";
+import vitacareLogo from "@/assets/vitacare-logo-final.png";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
 import { ScanVaccinationDialog } from "@/components/ScanVaccinationDialog";
