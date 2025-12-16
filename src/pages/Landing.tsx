@@ -36,27 +36,29 @@ const Landing = () => {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-20 px-4 min-h-[600px] flex items-center">
-        {/* Hintergrundbild mit Strahlen */}
+      <section className="relative overflow-hidden pt-24 md:pt-32 pb-16 md:pb-20 px-4 min-h-[500px] md:min-h-[600px] flex items-center">
+        {/* Hintergrundbild - responsiv angepasst */}
         <div 
-          className="absolute inset-0 bg-[length:100%_100%] bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center md:bg-right bg-no-repeat opacity-90"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
+        {/* Overlay für bessere Lesbarkeit auf Mobile */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/50 to-transparent md:from-background/60 md:via-background/30 md:to-transparent" />
         
         <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             {/* Text links */}
-            <div className="space-y-6 animate-fade-in text-left">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
+            <div className="space-y-4 md:space-y-6 animate-fade-in text-center md:text-left">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
                 Ihre Gesundheit,{" "}
                 <span className="bg-gradient-primary bg-clip-text text-transparent">
                   immer im Blick
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-lg mx-auto md:mx-0">
                 Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4 justify-center md:justify-start">
                 <Link to="/auth">
                   <Button size="lg" className="w-full sm:w-auto">
                     Kostenlos registrieren
