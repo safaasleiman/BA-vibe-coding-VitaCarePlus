@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import heroImage from "@/assets/hero-vitacare-new.png";
+import heroBackground from "@/assets/hero-sunburst.png";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -36,39 +36,36 @@ const Landing = () => {
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-20 px-4">
-        <div className="absolute inset-0 bg-gradient-hero opacity-40"></div>
-        <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6 animate-fade-in">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
-                Ihre Gesundheit,{" "}
-                <span className="bg-gradient-primary bg-clip-text text-transparent">
-                  immer im Blick
-                </span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground">
-                Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link to="/auth">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    Kostenlos registrieren
-                  </Button>
-                </Link>
-                <Link to="/auth">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                    Anmelden
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            <div className="relative animate-scale-in">
-              <img
-                src={heroImage}
-                alt="Vita Care+ Gesundheits-App"
-                className="w-full h-auto rounded-2xl shadow-lg"
-              />
+      <section className="relative overflow-hidden pt-32 pb-20 px-4 min-h-[600px] flex items-center">
+        {/* Hintergrundbild */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBackground})` }}
+        />
+        
+        {/* Text im Vordergrund */}
+        <div className="container mx-auto relative z-10 text-center max-w-3xl">
+          <div className="space-y-6 animate-fade-in">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
+              Ihre Gesundheit,{" "}
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                immer im Blick
+              </span>
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground">
+              Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
+              <Link to="/auth">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Kostenlos registrieren
+                </Button>
+              </Link>
+              <Link to="/auth">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                  Anmelden
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
