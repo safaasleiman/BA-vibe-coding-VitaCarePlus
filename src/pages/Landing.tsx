@@ -37,36 +37,41 @@ const Landing = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-32 pb-20 px-4 min-h-[600px] flex items-center">
-        {/* Hintergrundbild */}
+        {/* Hintergrundbild mit Strahlen */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
         
-        {/* Text im Vordergrund */}
-        <div className="container mx-auto relative z-10 text-center max-w-3xl">
-          <div className="space-y-6 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
-              Ihre Gesundheit,{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
-                immer im Blick
-              </span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground">
-              Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-              <Link to="/auth">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Kostenlos registrieren
-                </Button>
-              </Link>
-              <Link to="/auth">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                  Anmelden
-                </Button>
-              </Link>
+        <div className="container mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Text links */}
+            <div className="space-y-6 animate-fade-in text-left">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
+                Ihre Gesundheit,{" "}
+                <span className="bg-gradient-primary bg-clip-text text-transparent">
+                  immer im Blick
+                </span>
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground">
+                Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link to="/auth">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Kostenlos registrieren
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                    Anmelden
+                  </Button>
+                </Link>
+              </div>
             </div>
+            
+            {/* Leerer Bereich rechts - Figuren kommen vom Hintergrundbild */}
+            <div className="hidden lg:block"></div>
           </div>
         </div>
       </section>
