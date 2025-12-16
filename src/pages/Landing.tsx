@@ -35,15 +35,15 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-24 md:pt-32 pb-16 md:pb-20 px-4 min-h-[500px] md:min-h-[600px] flex items-center">
-        {/* Hintergrundbild - responsiv angepasst */}
+      {/* Hero Section - optimiert für 1920x900 Bild */}
+      <section className="relative overflow-hidden pt-24 md:pt-32 pb-16 md:pb-20 px-4 min-h-[450px] sm:min-h-[500px] md:min-h-[550px] lg:min-h-[600px] flex items-center">
+        {/* Hintergrundbild - responsive Positionierung */}
         <div 
-          className="absolute inset-0 bg-cover bg-center md:bg-right bg-no-repeat opacity-90"
+          className="absolute inset-0 bg-cover bg-no-repeat bg-[position:70%_center] sm:bg-[position:65%_center] md:bg-[position:60%_center] lg:bg-[position:right_center]"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
-        {/* Overlay für bessere Lesbarkeit auf Mobile */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/50 to-transparent md:from-background/60 md:via-background/30 md:to-transparent" />
+        {/* Overlay-Gradient - stärker auf Mobile für bessere Textlesbarkeit */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/30 sm:from-background/85 sm:via-background/50 sm:to-transparent md:from-background/70 md:via-background/40 md:to-transparent lg:from-background/60 lg:via-background/30 lg:to-transparent" />
         
         <div className="container mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
