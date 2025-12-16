@@ -39,7 +39,7 @@ const Landing = () => {
       <section className="relative overflow-hidden pt-32 pb-20 px-4 min-h-[600px] flex items-center">
         {/* Hintergrundbild mit Strahlen */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-[length:100%_100%] bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
         
