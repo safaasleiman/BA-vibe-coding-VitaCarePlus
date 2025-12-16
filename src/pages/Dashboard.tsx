@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Syringe, Plus, LogOut, Calendar, FileText, User, Baby, Badge as BadgeIcon, Clock, Camera, Stethoscope, Filter } from "lucide-react";
-import vitacareLogo from "@/assets/vitacare-logo.png";
+import vitacareLogo from "@/assets/vitacare-logo-new.png";
 import { VaccinationList } from "@/components/VaccinationList";
 import { AddVaccinationDialog } from "@/components/AddVaccinationDialog";
 import { ScanVaccinationDialog } from "@/components/ScanVaccinationDialog";
@@ -257,13 +257,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-soft overflow-hidden animate-scale-in">
-                <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <h1 className="text-lg sm:text-xl font-bold text-foreground">Vita Care+</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Willkommen zurück!</p>
-              </div>
+              <img src={vitacareLogo} alt="Vita Care+ Logo" className="h-10 sm:h-12 w-auto animate-scale-in" />
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
               <PushNotificationToggle />
