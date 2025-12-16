@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Shield } from "lucide-react";
-import vitacareLogo from "@/assets/vitacare-logo-new.png";
+import vitacareLogo from "@/assets/vitacare-logo-final.png";
 
 export const Footer = () => {
   return (
