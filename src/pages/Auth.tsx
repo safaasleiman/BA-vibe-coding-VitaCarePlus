@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import vitacareLogo from "@/assets/vitacare-logo.png";
+import vitacareAuthLogo from "@/assets/vitacare-auth-logo.png";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -118,8 +118,8 @@ const Auth = () => {
       <div className="w-full max-w-[440px]">
         {/* Header with Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5 overflow-hidden animate-scale-in">
-            <img src={vitacareLogo} alt="Vita Care+ Logo" className="w-full h-full object-cover" />
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-5 animate-scale-in">
+            <img src={vitacareAuthLogo} alt="Vita Care+ Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">
             {activeTab === "signin" ? "Anmelden bei VitaCare+" : "Registrieren bei VitaCare+"}
