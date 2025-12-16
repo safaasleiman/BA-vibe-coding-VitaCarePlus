@@ -1,13 +1,13 @@
-import { VitaCareLogo } from "@/components/VitaCareLogo";
 import { Link } from "react-router-dom";
 import { Shield } from "lucide-react";
+import vitacareLogo from "@/assets/vitacare-logo-new.png";
 
 export const Footer = () => {
   return (
     <footer className="bg-muted/30 border-t border-border py-8 mt-20">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <VitaCareLogo size="md" />
+          <img src={vitacareLogo} alt="VitaCare+" className="h-8 w-auto" />
           
           <div className="flex items-center gap-6">
             <Link 
