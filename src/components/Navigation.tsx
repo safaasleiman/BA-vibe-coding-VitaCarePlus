@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { VitaCareLogo } from "@/components/VitaCareLogo";
+import vitacareLogo from "@/assets/vitacare-logo.png";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +13,7 @@ export const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="hover:opacity-80 transition-opacity">
-            <VitaCareLogo size="md" />
+            <img src={vitacareLogo} alt="VitaCare+ Logo" className="h-10 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
