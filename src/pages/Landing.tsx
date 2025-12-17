@@ -37,9 +37,9 @@ const Landing = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 md:pt-24 pb-8 md:pb-12 px-4">
-        {/* Hintergrundbild - zentriert und responsive */}
+        {/* Hintergrundbild - auf Mobile höher positioniert für besseren Ausschnitt */}
         <div 
-          className="absolute inset-0 bg-cover bg-no-repeat bg-center"
+          className="absolute inset-0 bg-no-repeat bg-[length:140%] sm:bg-[length:120%] md:bg-cover bg-[position:center_60%] sm:bg-[position:center_55%] md:bg-center"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
         {/* Subtiler Overlay für bessere Lesbarkeit */}
@@ -47,20 +47,20 @@ const Landing = () => {
         
         <div className="container mx-auto relative z-10">
           {/* Text oben zentriert */}
-          <div className="text-center space-y-4 md:space-y-6 animate-fade-in max-w-3xl mx-auto pt-4 md:pt-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground drop-shadow-sm">
+          <div className="text-center space-y-3 md:space-y-6 animate-fade-in max-w-3xl mx-auto pt-2 md:pt-8">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground drop-shadow-sm">
               Ihre Gesundheit,{" "}
               <span className="bg-gradient-primary bg-clip-text text-transparent">
                 immer im Blick
               </span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-lg mx-auto drop-shadow-sm">
+            <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-lg mx-auto drop-shadow-sm px-2">
               Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
             </p>
           </div>
           
-          {/* Platzhalter für das Hintergrundbild */}
-          <div className="h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px]" />
+          {/* Platzhalter für das Hintergrundbild - kleiner auf Mobile */}
+          <div className="h-[160px] sm:h-[220px] md:h-[300px] lg:h-[350px]" />
           
           {/* Buttons unten zentriert */}
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pb-4 md:pb-8">
