@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import heroIllustration from "@/assets/hero-illustration.png";
+import heroVitacare from "@/assets/hero-vitacare-family.jpg";
 const Landing = () => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -65,55 +65,13 @@ const Landing = () => {
               </div>
             </div>
             
-            {/* Illustration rechts mit Sunburst */}
+            {/* Illustration rechts */}
             <div className="flex justify-center lg:justify-end order-1 lg:order-2 animate-fade-in">
-              <div className="relative">
-                {/* Sunburst Hintergrund - passend zum Design System */}
-                <div className="absolute inset-0 -inset-x-16 -inset-y-16 opacity-50" style={{
-                background: `conic-gradient(from 0deg at 50% 50%, 
-                      hsl(210 30% 92%) 0deg, 
-                      hsl(195 40% 88%) 10deg, 
-                      hsl(210 30% 92%) 20deg, 
-                      hsl(195 40% 88%) 30deg, 
-                      hsl(210 30% 92%) 40deg, 
-                      hsl(195 40% 88%) 50deg, 
-                      hsl(210 30% 92%) 60deg, 
-                      hsl(195 40% 88%) 70deg, 
-                      hsl(210 30% 92%) 80deg, 
-                      hsl(195 40% 88%) 90deg,
-                      hsl(210 30% 92%) 100deg, 
-                      hsl(195 40% 88%) 110deg, 
-                      hsl(210 30% 92%) 120deg, 
-                      hsl(195 40% 88%) 130deg, 
-                      hsl(210 30% 92%) 140deg, 
-                      hsl(195 40% 88%) 150deg, 
-                      hsl(210 30% 92%) 160deg, 
-                      hsl(195 40% 88%) 170deg,
-                      hsl(210 30% 92%) 180deg, 
-                      hsl(195 40% 88%) 190deg, 
-                      hsl(210 30% 92%) 200deg, 
-                      hsl(195 40% 88%) 210deg, 
-                      hsl(210 30% 92%) 220deg, 
-                      hsl(195 40% 88%) 230deg, 
-                      hsl(210 30% 92%) 240deg, 
-                      hsl(195 40% 88%) 250deg,
-                      hsl(210 30% 92%) 260deg, 
-                      hsl(195 40% 88%) 270deg, 
-                      hsl(210 30% 92%) 280deg, 
-                      hsl(195 40% 88%) 290deg, 
-                      hsl(210 30% 92%) 300deg, 
-                      hsl(195 40% 88%) 310deg, 
-                      hsl(210 30% 92%) 320deg, 
-                      hsl(195 40% 88%) 330deg,
-                      hsl(210 30% 92%) 340deg, 
-                      hsl(195 40% 88%) 350deg, 
-                      hsl(210 30% 92%) 360deg
-                    )`,
-                borderRadius: '50%',
-                transform: 'scale(1.5)'
-              }} />
-                <img alt="VitaCare+ Familie Gesundheitsvorsorge" src="/lovable-uploads/b8d76265-62b7-4ca0-ac22-8769e118e6c6.png" className="relative z-10 w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl shadow-sm border-black border-0 rounded-2xl object-fill" />
-              </div>
+              <img 
+                alt="VitaCare+ Familie Gesundheitsvorsorge" 
+                src={heroVitacare} 
+                className="w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto"
+              />
             </div>
           </div>
         </div>
