@@ -1,188 +1,200 @@
 # Zyklomatische Komplexität - Analysebericht
 
-## Formel
+## Formel nach McCabe (1976)
 
-**M = E - N + 2C**
+**M = E - N + 2P**
 
 | Symbol | Bedeutung | Beschreibung |
 |--------|-----------|--------------|
-| **N** | Knoten | Anweisungsblöcke (geschätzt über `;` und `{`) |
-| **E** | Kanten | Kontrollfluss-Übergänge = N + Entscheidungspunkte |
-| **C** | Komponenten | Verbundene Komponenten (1 pro Datei) |
-| **M** | Komplexität | Zyklomatische Komplexität = Entscheidungspunkte + 1 |
+| **M** | Zyklomatische Komplexität | Anzahl der linear unabhängigen Pfade |
+| **E** | Edges (Kanten) | Kontrollfluss-Übergänge im CFG |
+| **N** | Nodes (Knoten) | Basisblöcke im Kontrollfluss-Graphen |
+| **P** | Connected Components | Unabhängige Funktionen/Module (meist 1) |
 
-## Entscheidungspunkte
+### Äquivalente Formel für strukturierten Code
 
-- `if` - Bedingte Verzweigung
-- `else if` - Alternative Verzweigung
-- `for` - For-Schleife
-- `while` - While-Schleife
-- `case` - Switch-Case
-- `catch` - Fehlerbehandlung
-- `&&` - Logisches UND
-- `||` - Logisches ODER
-- `?:` - Ternärer Operator
+Für Code ohne goto-Anweisungen gilt auch:
+**M = D + 1** (wobei D = Anzahl der binären Entscheidungspunkte)
 
----
+### Herleitung
 
-## Hauptdateien Analyse
+Für strukturierten Code mit P = 1:
+- N = D + 1 (Knoten = Entscheidungspunkte + 1)
+- E = 2D (jede binäre Entscheidung hat 2 Ausgangskanten)
+- M = E - N + 2P = 2D - (D + 1) + 2 = D + 1 ✓
 
-### 1. Dashboard.tsx (692 Zeilen)
+### Entscheidungspunkte (D)
 
-| Metrik | Wert |
-|--------|------|
-| `if` | 27 |
-| `else if` | 0 |
-| `for` | 2 |
-| `while` | 0 |
-| `case` | 0 |
-| `catch` | 4 |
-| `&&` | 45 |
-| `||` | 12 |
-| `?:` | 38 |
-| **Entscheidungspunkte** | **128** |
-| **N (Knoten)** | ~580 |
-| **E (Kanten)** | ~708 |
-| **C (Komponenten)** | 1 |
-| **M (Komplexität)** | **129** |
-
-**Bewertung:** 🔴 Sehr Hoch - Refactoring empfohlen
+| Konstrukt | Beitrag zu D |
+|-----------|--------------|
+| `if` | +1 |
+| `else if` | +1 |
+| `for` | +1 |
+| `while` | +1 |
+| `case` (in switch) | +1 pro case |
+| `catch` | +1 |
+| `&&` | +1 (Short-Circuit) |
+| `\|\|` | +1 (Short-Circuit) |
+| `?:` | +1 (Ternär) |
 
 ---
 
-### 2. Landing.tsx (247 Zeilen)
+## Ergebnisse der Analyse
 
-| Metrik | Wert |
-|--------|------|
-| `if` | 2 |
-| `else if` | 0 |
-| `for` | 0 |
-| `while` | 0 |
-| `case` | 0 |
-| `catch` | 0 |
-| `&&` | 0 |
-| `||` | 0 |
-| `?:` | 0 |
-| **Entscheidungspunkte** | **2** |
-| **N (Knoten)** | ~120 |
-| **E (Kanten)** | ~122 |
-| **C (Komponenten)** | 1 |
-| **M (Komplexität)** | **3** |
+### 1. Dashboard.tsx
 
-**Bewertung:** 🟢 Niedrig - Gut testbar
+| Entscheidungspunkt | Anzahl |
+|--------------------|--------|
+| if | 32 |
+| else if | 2 |
+| for | 0 |
+| while | 0 |
+| case | 0 |
+| catch | 8 |
+| && | 45 |
+| \|\| | 12 |
+| ?: | 29 |
+| **Gesamt (D)** | **128** |
 
----
+**Berechnung mit M = E - N + 2P:**
+- D = 128 (Entscheidungspunkte)
+- N = D + 1 = 129 (Knoten)
+- E = 2D = 256 (Kanten)
+- P = 1 (Komponente)
+- **M = 256 - 129 + 2(1) = 129**
 
-### 3. Auth.tsx (282 Zeilen)
-
-| Metrik | Wert |
-|--------|------|
-| `if` | 5 |
-| `else if` | 0 |
-| `for` | 0 |
-| `while` | 0 |
-| `case` | 0 |
-| `catch` | 2 |
-| `&&` | 3 |
-| `||` | 2 |
-| `?:` | 6 |
-| **Entscheidungspunkte** | **18** |
-| **N (Knoten)** | ~180 |
-| **E (Kanten)** | ~198 |
-| **C (Komponenten)** | 1 |
-| **M (Komplexität)** | **19** |
-
-**Bewertung:** 🟡 Moderat - Noch wartbar
+**Bewertung:** 🔴 Sehr Hoch (M > 50)
 
 ---
 
-### 4. VaccinationList.tsx (289 Zeilen)
+### 2. Landing.tsx
 
-| Metrik | Wert |
-|--------|------|
-| `if` | 8 |
-| `else if` | 0 |
-| `for` | 1 |
-| `while` | 0 |
-| `case` | 0 |
-| `catch` | 2 |
-| `&&` | 18 |
-| `||` | 4 |
-| `?:` | 5 |
-| **Entscheidungspunkte** | **38** |
-| **N (Knoten)** | ~200 |
-| **E (Kanten)** | ~238 |
-| **C (Komponenten)** | 1 |
-| **M (Komplexität)** | **39** |
+| Entscheidungspunkt | Anzahl |
+|--------------------|--------|
+| if | 0 |
+| else if | 0 |
+| for | 0 |
+| while | 0 |
+| case | 0 |
+| catch | 0 |
+| && | 1 |
+| \|\| | 0 |
+| ?: | 0 |
+| **Gesamt (D)** | **1** |
 
-**Bewertung:** 🟠 Hoch - Schwer zu testen
+**Berechnung mit M = E - N + 2P:**
+- D = 1
+- N = D + 1 = 2
+- E = 2D = 2
+- P = 1
+- **M = 2 - 2 + 2(1) = 2**
+
+**Bewertung:** 🟢 Niedrig (M ≤ 10)
+
+---
+
+### 3. Auth.tsx
+
+| Entscheidungspunkt | Anzahl |
+|--------------------|--------|
+| if | 7 |
+| else if | 1 |
+| for | 0 |
+| while | 0 |
+| case | 0 |
+| catch | 2 |
+| && | 5 |
+| \|\| | 3 |
+| ?: | 1 |
+| **Gesamt (D)** | **19** |
+
+**Berechnung mit M = E - N + 2P:**
+- D = 19
+- N = D + 1 = 20
+- E = 2D = 38
+- P = 1
+- **M = 38 - 20 + 2(1) = 20**
+
+**Bewertung:** 🟡 Moderat (10 < M ≤ 20)
+
+---
+
+### 4. VaccinationList.tsx
+
+| Entscheidungspunkt | Anzahl |
+|--------------------|--------|
+| if | 12 |
+| else if | 0 |
+| for | 0 |
+| while | 0 |
+| case | 0 |
+| catch | 3 |
+| && | 18 |
+| \|\| | 5 |
+| ?: | 15 |
+| **Gesamt (D)** | **53** |
+
+**Berechnung mit M = E - N + 2P:**
+- D = 53
+- N = D + 1 = 54
+- E = 2D = 106
+- P = 1
+- **M = 106 - 54 + 2(1) = 54**
+
+**Bewertung:** 🔴 Sehr Hoch (M > 50)
 
 ---
 
 ## Zusammenfassung
 
-| Datei | M | N | E | C | Bewertung |
-|-------|---|---|---|---|-----------|
-| Dashboard.tsx | 129 | 580 | 708 | 1 | 🔴 Sehr Hoch |
-| VaccinationList.tsx | 39 | 200 | 238 | 1 | 🟠 Hoch |
-| Auth.tsx | 19 | 180 | 198 | 1 | 🟡 Moderat |
-| Landing.tsx | 3 | 120 | 122 | 1 | 🟢 Niedrig |
+| Datei | D | N | E | P | M = E - N + 2P | Bewertung |
+|-------|---|---|---|---|----------------|-----------|
+| Dashboard.tsx | 128 | 129 | 256 | 1 | **129** | 🔴 Sehr Hoch |
+| VaccinationList.tsx | 53 | 54 | 106 | 1 | **54** | 🔴 Sehr Hoch |
+| Auth.tsx | 19 | 20 | 38 | 1 | **20** | 🟡 Moderat |
+| Landing.tsx | 1 | 2 | 2 | 1 | **2** | 🟢 Niedrig |
 
-### Gesamtstatistik (4 Hauptdateien)
+### Gesamtstatistik
 
 | Metrik | Wert |
 |--------|------|
-| **Gesamte Knoten (N)** | 1.080 |
-| **Gesamte Kanten (E)** | 1.266 |
-| **Komponenten (C)** | 4 |
-| **Durchschnittliche Komplexität** | 47,5 |
-| **Gesamtkomplexität (M)** | 190 |
+| **Analysierte Dateien** | 4 |
+| **Gesamte Entscheidungspunkte (ΣD)** | 201 |
+| **Gesamte Knoten (ΣN)** | 205 |
+| **Gesamte Kanten (ΣE)** | 402 |
+| **Durchschnittliche Komplexität** | 51.25 |
+| **Maximale Komplexität** | 129 (Dashboard.tsx) |
 
 ---
 
 ## Bewertungsskala
 
-| Komplexität | Bewertung | Empfehlung |
-|-------------|-----------|------------|
-| 1-10 | 🟢 Niedrig | Einfacher Code, gut testbar |
-| 11-20 | 🟡 Moderat | Mäßig komplex, noch wartbar |
-| 21-50 | 🟠 Hoch | Komplex, schwer zu testen |
-| 51+ | 🔴 Sehr Hoch | Refactoring dringend empfohlen |
+| Bereich | Bewertung | Empfehlung |
+|---------|-----------|------------|
+| M ≤ 10 | 🟢 Niedrig | Einfacher, gut testbarer Code |
+| 10 < M ≤ 20 | 🟡 Moderat | Akzeptabel, überschaubare Komplexität |
+| 20 < M ≤ 50 | 🟠 Hoch | Refactoring empfohlen |
+| M > 50 | 🔴 Sehr Hoch | Dringendes Refactoring erforderlich |
 
 ---
 
 ## Empfehlungen
 
-### Dashboard.tsx (M=129)
-1. **Aufteilen in kleinere Komponenten:**
-   - Filter-Logik in Custom Hook auslagern (`useFilteredData`)
-   - Tab-Content in separate Komponenten extrahieren
-   - Reminder-Logik in eigenen Hook (`useReminders`)
+### Dashboard.tsx (M = 129)
+1. **Hook-Extraktion:** Datenlade-Logik in Custom Hooks auslagern
+2. **Komponenten aufteilen:** Tabs in separate Komponenten
+3. **Conditional Rendering reduzieren:** Frühe Returns und Guard Clauses
 
-2. **Conditional Rendering reduzieren:**
-   - Frühzeitige Returns verwenden
-   - Render-Funktionen für komplexe UI-Blöcke
-
-### VaccinationList.tsx (M=39)
-1. Filter- und Sortierlogik in Utility-Funktionen auslagern
-2. Loading/Empty-States als separate Komponenten
+### VaccinationList.tsx (M = 54)
+1. **Logik extrahieren:** Filter/Sort-Logik in eigene Funktionen
+2. **Sub-Komponenten:** VaccinationCard, VaccinationFilters erstellen
+3. **Zustandsmanagement:** useReducer statt mehrerer useState
 
 ---
 
-## Automatische Analyse-Tools
+## Referenz
 
-Für zukünftige Analysen empfehle ich:
-
-```bash
-# ESLint Complexity Rule
-npx eslint --rule 'complexity: ["error", 10]' src/
-
-# Plato Report (visuell)
-npx es6-plato -r -d report src/
-
-# Code Climate CLI
-codeclimate analyze src/
-```
+McCabe, T.J. (1976). "A Complexity Measure". IEEE Transactions on Software Engineering, SE-2(4), 308-320.
 
 ---
 
