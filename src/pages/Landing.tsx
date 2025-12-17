@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import heroBackground from "@/assets/hero-vitacare-family.jpg";
+import heroIllustration from "@/assets/hero-illustration.png";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -35,45 +35,43 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 md:pt-24 pb-8 md:pb-12 px-4">
-        {/* Hintergrundbild - auf Mobile höher positioniert für besseren Ausschnitt */}
-        <div 
-          className="absolute inset-0 bg-no-repeat bg-[length:140%] sm:bg-[length:120%] md:bg-cover bg-[position:center_60%] sm:bg-[position:center_55%] md:bg-center"
-          style={{ backgroundImage: `url(${heroBackground})` }}
-        />
-        {/* Subtiler Overlay für bessere Lesbarkeit */}
-        <div className="absolute inset-0 bg-background/20" />
-        
+      {/* Hero Section - Split Layout */}
+      <section className="relative overflow-hidden pt-24 md:pt-32 pb-12 md:pb-20 px-4 bg-gradient-to-br from-primary/5 via-accent/5 to-background">
         <div className="container mx-auto relative z-10">
-          {/* Text oben zentriert */}
-          <div className="text-center space-y-3 md:space-y-6 animate-fade-in max-w-3xl mx-auto pt-2 md:pt-8">
-            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground drop-shadow-sm">
-              Ihre Gesundheit,{" "}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
-                immer im Blick
-              </span>
-            </h1>
-            <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-lg mx-auto drop-shadow-sm px-2">
-              Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
-            </p>
-          </div>
-          
-          {/* Platzhalter für das Hintergrundbild - kleiner auf Mobile */}
-          <div className="h-[160px] sm:h-[220px] md:h-[300px] lg:h-[350px]" />
-          
-          {/* Buttons unten zentriert */}
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pb-4 md:pb-8">
-            <Link to="/auth">
-              <Button size="lg" className="w-full sm:w-auto shadow-lg">
-                Kostenlos registrieren
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-background/80 backdrop-blur-sm">
-                Anmelden
-              </Button>
-            </Link>
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
+            {/* Text links */}
+            <div className="space-y-4 md:space-y-6 animate-fade-in text-center lg:text-left order-2 lg:order-1">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
+                Ihre Gesundheit,{" "}
+                <span className="bg-gradient-primary bg-clip-text text-transparent">
+                  immer im Blick
+                </span>
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0">
+                Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4 justify-center lg:justify-start">
+                <Link to="/auth">
+                  <Button size="lg" className="w-full sm:w-auto shadow-lg">
+                    Kostenlos registrieren
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                    Anmelden
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            
+            {/* Illustration rechts */}
+            <div className="flex justify-center lg:justify-end order-1 lg:order-2 animate-fade-in">
+              <img 
+                src={heroIllustration} 
+                alt="VitaCare+ Familie Gesundheitsvorsorge" 
+                className="w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl"
+              />
+            </div>
           </div>
         </div>
       </section>
