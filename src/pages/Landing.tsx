@@ -7,13 +7,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import heroIllustration from "@/assets/hero-illustration.png";
-
 const Landing = () => {
   const navigate = useNavigate();
-
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
       if (session) {
         navigate("/dashboard");
       }
@@ -21,18 +23,17 @@ const Landing = () => {
 
     // Listen for auth changes
     const {
-      data: { subscription },
+      data: {
+        subscription
+      }
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         navigate("/dashboard");
       }
     });
-
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navigation />
 
       {/* Hero Section - Split Layout */}
@@ -68,10 +69,8 @@ const Landing = () => {
             <div className="flex justify-center lg:justify-end order-1 lg:order-2 animate-fade-in">
               <div className="relative">
                 {/* Sunburst Hintergrund - passend zum Design System */}
-                <div 
-                  className="absolute inset-0 -inset-x-16 -inset-y-16 opacity-50"
-                  style={{
-                    background: `conic-gradient(from 0deg at 50% 50%, 
+                <div className="absolute inset-0 -inset-x-16 -inset-y-16 opacity-50" style={{
+                background: `conic-gradient(from 0deg at 50% 50%, 
                       hsl(210 30% 92%) 0deg, 
                       hsl(195 40% 88%) 10deg, 
                       hsl(210 30% 92%) 20deg, 
@@ -110,15 +109,10 @@ const Landing = () => {
                       hsl(195 40% 88%) 350deg, 
                       hsl(210 30% 92%) 360deg
                     )`,
-                    borderRadius: '50%',
-                    transform: 'scale(1.5)',
-                  }}
-                />
-                <img 
-                  src={heroIllustration} 
-                  alt="VitaCare+ Familie Gesundheitsvorsorge" 
-                  className="relative z-10 w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl"
-                />
+                borderRadius: '50%',
+                transform: 'scale(1.5)'
+              }} />
+                <img alt="VitaCare+ Familie Gesundheitsvorsorge" src="/lovable-uploads/b8d76265-62b7-4ca0-ac22-8769e118e6c6.png" className="relative z-10 w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl object-contain shadow-sm rounded-xl border-black border-0" />
               </div>
             </div>
           </div>
@@ -287,8 +281,6 @@ const Landing = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
