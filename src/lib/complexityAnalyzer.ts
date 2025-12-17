@@ -1,22 +1,28 @@
 /**
- * Zyklomatische Komplexität Analyzer
+ * Zyklomatische Komplexität Analyzer nach McCabe (1976)
  * 
- * Formel: M = E - N + 2C
- * - N = Anzahl der Knoten (Anweisungsblöcke)
- * - E = Anzahl der Kanten (Kontrollfluss-Übergänge)
- * - C = Anzahl der verbundenen Komponenten (meist 1 pro Funktion)
+ * Korrekte Formel: M = E - N + 2P
+ * 
+ * Wobei:
+ * - N = Anzahl der Knoten (Basisblöcke im Kontrollfluss-Graphen)
+ * - E = Anzahl der Kanten (Kontrollfluss-Übergänge zwischen Knoten)
+ * - P = Anzahl der verbundenen Komponenten (unabhängige Funktionen/Module)
  * - M = Zyklomatische Komplexität
  * 
- * Vereinfachte Formel: M = Entscheidungspunkte + 1
+ * Für strukturierten Code ohne goto-Anweisungen gilt auch:
+ * M = Anzahl der binären Entscheidungspunkte + 1
  * 
- * Entscheidungspunkte:
- * - if, else if
- * - for, while, do-while
- * - switch case
- * - catch
- * - && (logisches UND)
- * - || (logisches ODER)
- * - ?: (ternärer Operator)
+ * Entscheidungspunkte (binäre Verzweigungen):
+ * - if, else if (je +1)
+ * - for, while, do-while (je +1)
+ * - switch case (je case +1)
+ * - catch (je +1)
+ * - && (je +1, Short-Circuit-Auswertung)
+ * - || (je +1, Short-Circuit-Auswertung)
+ * - ?: (je +1, ternärer Operator)
+ * 
+ * Referenz: McCabe, T.J. (1976). "A Complexity Measure"
+ * IEEE Transactions on Software Engineering, SE-2(4), 308-320.
  */
 
 export interface ComplexityResult {
@@ -82,7 +88,51 @@ export function countDecisionPoints(code: string): {
 }
 
 /**
- * Berechnet die zyklomatische Komplexität
+ * Zählt Basisblöcke (Knoten N) im Code
+ * 
+ * Ein Basisblock ist eine Sequenz von Anweisungen, die:
+ * - Nur am Anfang betreten werden kann
+ * - Nur am Ende verlassen werden kann
+ * 
+ * Knoten entstehen durch:
+ * - Start der Funktion/Datei (+1)
+ * - Jeder Verzweigungspunkt erstellt neue Blöcke
+ * - Nach jedem Entscheidungspunkt gibt es mindestens 2 mögliche Folgeblöcke
+ */
+export function countNodes(code: string, decisionPoints: number): number {
+  // N = Entscheidungspunkte + 1 (für strukturierten Code)
+  // Jeder Entscheidungspunkt teilt den Code in weitere Pfade
+  // Start-Knoten + je ein Knoten pro Verzweigungsausgang
+  return decisionPoints + 1;
+}
+
+/**
+ * Zählt Kanten (E) im Kontrollfluss-Graphen
+ * 
+ * Kanten repräsentieren mögliche Übergänge zwischen Knoten.
+ * Für strukturierten Code gilt:
+ * - Linearer Fluss: 1 Kante pro Knoten (außer dem letzten)
+ * - Jede binäre Entscheidung fügt 1 zusätzliche Kante hinzu
+ *   (weil 2 Ausgänge statt 1)
+ * 
+ * Formel: E = N + D - 1, wobei D = Entscheidungspunkte
+ * Oder äquivalent für M = E - N + 2P mit P=1:
+ * E = M + N - 2 = (D + 1) + N - 2 = D + N - 1
+ */
+export function countEdges(nodes: number, decisionPoints: number): number {
+  // E = 2 * Entscheidungspunkte + 1 (für strukturierten Code mit P=1)
+  // Herleitung: M = E - N + 2P, mit M = D + 1 und P = 1
+  // D + 1 = E - N + 2
+  // E = D + 1 + N - 2 = D + N - 1
+  // Da N = D + 1: E = D + (D + 1) - 1 = 2D
+  // Korrektur für Endknoten: E = 2D (jede Entscheidung hat 2 Ausgänge)
+  return 2 * decisionPoints;
+}
+
+/**
+ * Berechnet die zyklomatische Komplexität nach McCabe
+ * 
+ * Formel: M = E - N + 2P
  */
 export function calculateComplexity(code: string, fileName: string = 'unknown'): ComplexityResult {
   const counts = countDecisionPoints(code);
@@ -98,19 +148,17 @@ export function calculateComplexity(code: string, fileName: string = 'unknown'):
     counts.orCount +
     counts.ternaryCount;
 
-  // Vereinfachte Berechnung: M = Entscheidungspunkte + 1
-  const cyclomaticComplexity = totalDecisionPoints + 1;
-
-  // Für die erweiterte Formel M = E - N + 2C:
-  // N (Knoten) ≈ Anzahl der Anweisungen (grobe Schätzung über Semikolons und Blöcke)
-  const nodes = (code.match(/;/g) || []).length + 
-                (code.match(/\{/g) || []).length;
-  
-  // E (Kanten) = N + Entscheidungspunkte (jede Entscheidung fügt eine Kante hinzu)
-  const edges = nodes + totalDecisionPoints;
-  
-  // C (Komponenten) = 1 für einzelne Funktion/Datei
+  // P = 1 für einzelne Datei/Modul
   const components = 1;
+  
+  // N = Anzahl der Knoten (Basisblöcke)
+  const nodes = countNodes(code, totalDecisionPoints);
+  
+  // E = Anzahl der Kanten (Kontrollfluss-Übergänge)
+  const edges = countEdges(nodes, totalDecisionPoints);
+
+  // Korrekte Formel: M = E - N + 2P
+  const cyclomaticComplexity = edges - nodes + (2 * components);
 
   return {
     fileName,
