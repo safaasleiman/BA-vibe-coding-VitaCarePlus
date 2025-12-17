@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import heroBackground from "@/assets/hero-sunburst.png";
+import heroBackground from "@/assets/hero-vitacare-family.jpg";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -35,45 +35,45 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
 
-      {/* Hero Section - optimiert für 1920x900 Bild */}
-      <section className="relative overflow-hidden pt-24 md:pt-32 pb-16 md:pb-20 px-4 min-h-[450px] sm:min-h-[500px] md:min-h-[550px] lg:min-h-[600px] flex items-center">
-        {/* Hintergrundbild - responsive Positionierung */}
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-20 md:pt-24 pb-8 md:pb-12 px-4">
+        {/* Hintergrundbild - zentriert und responsive */}
         <div 
-          className="absolute inset-0 bg-cover bg-no-repeat bg-[position:70%_center] sm:bg-[position:65%_center] md:bg-[position:60%_center] lg:bg-[position:right_center]"
+          className="absolute inset-0 bg-cover bg-no-repeat bg-center"
           style={{ backgroundImage: `url(${heroBackground})` }}
         />
-        {/* Overlay-Gradient - stärker auf Mobile für bessere Textlesbarkeit */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/30 sm:from-background/85 sm:via-background/50 sm:to-transparent md:from-background/70 md:via-background/40 md:to-transparent lg:from-background/60 lg:via-background/30 lg:to-transparent" />
+        {/* Subtiler Overlay für bessere Lesbarkeit */}
+        <div className="absolute inset-0 bg-background/20" />
         
         <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
-            {/* Text links */}
-            <div className="space-y-4 md:space-y-6 animate-fade-in text-center md:text-left">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground">
-                Ihre Gesundheit,{" "}
-                <span className="bg-gradient-primary bg-clip-text text-transparent">
-                  immer im Blick
-                </span>
-              </h1>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-lg mx-auto md:mx-0">
-                Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4 justify-center md:justify-start">
-                <Link to="/auth">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    Kostenlos registrieren
-                  </Button>
-                </Link>
-                <Link to="/auth">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                    Anmelden
-                  </Button>
-                </Link>
-              </div>
-            </div>
-            
-            {/* Leerer Bereich rechts - Figuren kommen vom Hintergrundbild */}
-            <div className="hidden lg:block"></div>
+          {/* Text oben zentriert */}
+          <div className="text-center space-y-4 md:space-y-6 animate-fade-in max-w-3xl mx-auto pt-4 md:pt-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground drop-shadow-sm">
+              Ihre Gesundheit,{" "}
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                immer im Blick
+              </span>
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-lg mx-auto drop-shadow-sm">
+              Vorsorge, die mitdenkt. Intelligente Erinnerungen für Impfungen und U-Untersuchungen basierend auf RKI-Empfehlungen.
+            </p>
+          </div>
+          
+          {/* Platzhalter für das Hintergrundbild */}
+          <div className="h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px]" />
+          
+          {/* Buttons unten zentriert */}
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pb-4 md:pb-8">
+            <Link to="/auth">
+              <Button size="lg" className="w-full sm:w-auto shadow-lg">
+                Kostenlos registrieren
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground bg-background/80 backdrop-blur-sm">
+                Anmelden
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
