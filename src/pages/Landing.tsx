@@ -112,7 +112,7 @@ const Landing = () => {
                 borderRadius: '50%',
                 transform: 'scale(1.5)'
               }} />
-                <img alt="VitaCare+ Familie Gesundheitsvorsorge" src="/lovable-uploads/b8d76265-62b7-4ca0-ac22-8769e118e6c6.png" className="relative z-10 w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl object-contain shadow-sm rounded-xl border-black border-0" />
+                <img alt="VitaCare+ Familie Gesundheitsvorsorge" src="/lovable-uploads/b8d76265-62b7-4ca0-ac22-8769e118e6c6.png" className="relative z-10 w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl shadow-sm border-black border-0 rounded-2xl object-fill" />
               </div>
             </div>
           </div>
