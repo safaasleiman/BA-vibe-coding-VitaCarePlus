@@ -64,13 +64,62 @@ const Landing = () => {
               </div>
             </div>
             
-            {/* Illustration rechts */}
+            {/* Illustration rechts mit Sunburst */}
             <div className="flex justify-center lg:justify-end order-1 lg:order-2 animate-fade-in">
-              <img 
-                src={heroIllustration} 
-                alt="VitaCare+ Familie Gesundheitsvorsorge" 
-                className="w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl"
-              />
+              <div className="relative">
+                {/* Sunburst Hintergrund */}
+                <div 
+                  className="absolute inset-0 -inset-x-16 -inset-y-16 opacity-60"
+                  style={{
+                    background: `conic-gradient(from 0deg at 50% 50%, 
+                      hsl(170 40% 85%) 0deg, 
+                      hsl(170 50% 92%) 10deg, 
+                      hsl(170 40% 85%) 20deg, 
+                      hsl(170 50% 92%) 30deg, 
+                      hsl(170 40% 85%) 40deg, 
+                      hsl(170 50% 92%) 50deg, 
+                      hsl(170 40% 85%) 60deg, 
+                      hsl(170 50% 92%) 70deg, 
+                      hsl(170 40% 85%) 80deg, 
+                      hsl(170 50% 92%) 90deg,
+                      hsl(170 40% 85%) 100deg, 
+                      hsl(170 50% 92%) 110deg, 
+                      hsl(170 40% 85%) 120deg, 
+                      hsl(170 50% 92%) 130deg, 
+                      hsl(170 40% 85%) 140deg, 
+                      hsl(170 50% 92%) 150deg, 
+                      hsl(170 40% 85%) 160deg, 
+                      hsl(170 50% 92%) 170deg,
+                      hsl(170 40% 85%) 180deg, 
+                      hsl(170 50% 92%) 190deg, 
+                      hsl(170 40% 85%) 200deg, 
+                      hsl(170 50% 92%) 210deg, 
+                      hsl(170 40% 85%) 220deg, 
+                      hsl(170 50% 92%) 230deg, 
+                      hsl(170 40% 85%) 240deg, 
+                      hsl(170 50% 92%) 250deg,
+                      hsl(170 40% 85%) 260deg, 
+                      hsl(170 50% 92%) 270deg, 
+                      hsl(170 40% 85%) 280deg, 
+                      hsl(170 50% 92%) 290deg, 
+                      hsl(170 40% 85%) 300deg, 
+                      hsl(170 50% 92%) 310deg, 
+                      hsl(170 40% 85%) 320deg, 
+                      hsl(170 50% 92%) 330deg,
+                      hsl(170 40% 85%) 340deg, 
+                      hsl(170 50% 92%) 350deg, 
+                      hsl(170 40% 85%) 360deg
+                    )`,
+                    borderRadius: '50%',
+                    transform: 'scale(1.5)',
+                  }}
+                />
+                <img 
+                  src={heroIllustration} 
+                  alt="VitaCare+ Familie Gesundheitsvorsorge" 
+                  className="relative z-10 w-[200px] sm:w-[280px] md:w-[350px] lg:w-[420px] h-auto drop-shadow-xl"
+                />
+              </div>
             </div>
           </div>
         </div>
