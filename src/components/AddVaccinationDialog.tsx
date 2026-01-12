@@ -14,6 +14,8 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { getEncryptionKey, encryptText } from "@/lib/encryption";
+import { VaccinationSelect } from "@/components/VaccinationSelect";
+import type { GermanVaccination } from "@/lib/germanVaccinations";
 
 interface Child {
   id: string;
@@ -38,8 +40,9 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = []
   const [vaccinationDateInput, setVaccinationDateInput] = useState("");
   const [nextDueDate, setNextDueDate] = useState<Date>();
   const [nextDueDateInput, setNextDueDateInput] = useState("");
+  const [selectedVaccinationId, setSelectedVaccinationId] = useState<string>("");
+  const [customVaccineName, setCustomVaccineName] = useState("");
   const [formData, setFormData] = useState({
-    vaccine_name: "",
     vaccine_type: "",
     doctor_name: "",
     batch_number: "",
@@ -57,8 +60,9 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = []
   useEffect(() => {
     if (open) {
       setSelectedChildId("self");
+      setSelectedVaccinationId("");
+      setCustomVaccineName("");
       setFormData({
-        vaccine_name: "",
         vaccine_type: "",
         doctor_name: "",
         batch_number: "",
@@ -71,6 +75,23 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = []
     }
   }, [open]);
 
+  const handleVaccinationSelect = (id: string, vaccination?: GermanVaccination) => {
+    setSelectedVaccinationId(id);
+    if (vaccination && id !== "sonstige") {
+      // Auto-fill vaccine type based on selection
+      setFormData(prev => ({
+        ...prev,
+        vaccine_type: vaccination.name,
+      }));
+      setCustomVaccineName("");
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        vaccine_type: "",
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -78,6 +99,24 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = []
       toast({
         title: "Fehler",
         description: "Bitte geben Sie ein Impfdatum an.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedVaccinationId) {
+      toast({
+        title: "Fehler",
+        description: "Bitte wählen Sie eine Impfung aus.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedVaccinationId === "sonstige" && !customVaccineName.trim()) {
+      toast({
+        title: "Fehler",
+        description: "Bitte geben Sie den Namen der Impfung ein.",
         variant: "destructive",
       });
       return;
@@ -92,11 +131,16 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = []
         encryptedNotes = await encryptText(formData.notes, encryptionKey);
       }
 
+      // Determine vaccine name
+      const vaccineName = selectedVaccinationId === "sonstige" 
+        ? customVaccineName.trim()
+        : formData.vaccine_type;
+
       const { error } = await supabase.from("vaccinations").insert({
         user_id: userId,
         child_id: selectedChildId === "self" ? null : selectedChildId,
-        vaccine_name: formData.vaccine_name,
-        vaccine_type: formData.vaccine_type,
+        vaccine_name: vaccineName,
+        vaccine_type: formData.vaccine_type || vaccineName,
         vaccination_date: format(vaccinationDate, "yyyy-MM-dd"),
         next_due_date: nextDueDate ? format(nextDueDate, "yyyy-MM-dd") : null,
         doctor_name: formData.doctor_name || null,
@@ -165,26 +209,13 @@ export const AddVaccinationDialog = ({ open, onOpenChange, userId, children = []
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="vaccine_name">Impfstoff *</Label>
-            <Input
-              id="vaccine_name"
-              placeholder="z.B. COVID-19 Moderna"
-              value={formData.vaccine_name}
-              onChange={(e) => setFormData({ ...formData, vaccine_name: e.target.value })}
-              required
+            <Label>Impfung *</Label>
+            <VaccinationSelect
+              value={selectedVaccinationId}
+              onValueChange={handleVaccinationSelect}
               disabled={loading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="vaccine_type">Impfungstyp *</Label>
-            <Input
-              id="vaccine_type"
-              placeholder="z.B. COVID-19, Grippe, Tetanus"
-              value={formData.vaccine_type}
-              onChange={(e) => setFormData({ ...formData, vaccine_type: e.target.value })}
-              required
-              disabled={loading}
+              customValue={customVaccineName}
+              onCustomValueChange={setCustomVaccineName}
             />
           </div>
 

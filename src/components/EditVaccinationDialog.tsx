@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { getEncryptionKey, encryptText, decryptText } from "@/lib/encryption";
+import { VaccinationSelect } from "@/components/VaccinationSelect";
+import { GERMAN_VACCINATIONS, type GermanVaccination } from "@/lib/germanVaccinations";
 
 interface Child {
   id: string;
@@ -51,8 +53,9 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
   const [vaccinationDateInput, setVaccinationDateInput] = useState("");
   const [nextDueDate, setNextDueDate] = useState<Date>();
   const [nextDueDateInput, setNextDueDateInput] = useState("");
+  const [selectedVaccinationId, setSelectedVaccinationId] = useState<string>("");
+  const [customVaccineName, setCustomVaccineName] = useState("");
   const [formData, setFormData] = useState({
-    vaccine_name: "",
     vaccine_type: "",
     doctor_name: "",
     batch_number: "",
@@ -66,6 +69,16 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
     }
   }, [vaccination.user_id]);
 
+  // Find matching vaccination from the list based on name
+  const findMatchingVaccination = (name: string): string => {
+    const match = GERMAN_VACCINATIONS.find(
+      (v) => v.name.toLowerCase() === name.toLowerCase() ||
+             v.id.toLowerCase() === name.toLowerCase() ||
+             name.toLowerCase().includes(v.id.toLowerCase())
+    );
+    return match ? match.id : "sonstige";
+  };
+
   useEffect(() => {
     const loadData = async () => {
       if (open && vaccination) {
@@ -77,8 +90,17 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
           decryptedNotes = await decryptText(vaccination.notes, key);
         }
 
+        // Find matching vaccination ID
+        const matchedId = findMatchingVaccination(vaccination.vaccine_name);
+        setSelectedVaccinationId(matchedId);
+        
+        if (matchedId === "sonstige") {
+          setCustomVaccineName(vaccination.vaccine_name);
+        } else {
+          setCustomVaccineName("");
+        }
+
         setFormData({
-          vaccine_name: vaccination.vaccine_name,
           vaccine_type: vaccination.vaccine_type,
           doctor_name: vaccination.doctor_name || "",
           batch_number: vaccination.batch_number || "",
@@ -105,6 +127,17 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
     loadData();
   }, [open, vaccination]);
 
+  const handleVaccinationSelect = (id: string, selectedVaccination?: GermanVaccination) => {
+    setSelectedVaccinationId(id);
+    if (selectedVaccination && id !== "sonstige") {
+      setFormData(prev => ({
+        ...prev,
+        vaccine_type: selectedVaccination.name,
+      }));
+      setCustomVaccineName("");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -112,6 +145,24 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
       toast({
         title: "Fehler",
         description: "Bitte geben Sie ein Impfdatum an.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedVaccinationId) {
+      toast({
+        title: "Fehler",
+        description: "Bitte wählen Sie eine Impfung aus.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedVaccinationId === "sonstige" && !customVaccineName.trim()) {
+      toast({
+        title: "Fehler",
+        description: "Bitte geben Sie den Namen der Impfung ein.",
         variant: "destructive",
       });
       return;
@@ -126,12 +177,17 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
         encryptedNotes = await encryptText(formData.notes, encryptionKey);
       }
 
+      // Determine vaccine name
+      const vaccineName = selectedVaccinationId === "sonstige" 
+        ? customVaccineName.trim()
+        : formData.vaccine_type;
+
       const { error } = await supabase
         .from("vaccinations")
         .update({
           child_id: selectedChildId === "self" ? null : selectedChildId,
-          vaccine_name: formData.vaccine_name,
-          vaccine_type: formData.vaccine_type,
+          vaccine_name: vaccineName,
+          vaccine_type: formData.vaccine_type || vaccineName,
           vaccination_date: format(vaccinationDate, "yyyy-MM-dd"),
           next_due_date: nextDueDate ? format(nextDueDate, "yyyy-MM-dd") : null,
           doctor_name: formData.doctor_name || null,
@@ -221,26 +277,13 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit_vaccine_name">Impfstoff *</Label>
-            <Input
-              id="edit_vaccine_name"
-              placeholder="z.B. COVID-19 Moderna"
-              value={formData.vaccine_name}
-              onChange={(e) => setFormData({ ...formData, vaccine_name: e.target.value })}
-              required
+            <Label>Impfung *</Label>
+            <VaccinationSelect
+              value={selectedVaccinationId}
+              onValueChange={handleVaccinationSelect}
               disabled={loading}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="edit_vaccine_type">Impfungstyp *</Label>
-            <Input
-              id="edit_vaccine_type"
-              placeholder="z.B. COVID-19, Grippe, Tetanus"
-              value={formData.vaccine_type}
-              onChange={(e) => setFormData({ ...formData, vaccine_type: e.target.value })}
-              required
-              disabled={loading}
+              customValue={customVaccineName}
+              onCustomValueChange={setCustomVaccineName}
             />
           </div>
 
@@ -271,7 +314,7 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
                       <CalendarIcon className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="center" side="top">
+                  <PopoverContent className="w-auto p-0 z-[100]" align="center" side="top">
                     <Calendar
                       mode="single"
                       selected={vaccinationDate}
@@ -317,7 +360,7 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
                       <CalendarIcon className="h-4 w-4" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="center" side="top">
+                  <PopoverContent className="w-auto p-0 z-[100]" align="center" side="top">
                     <Calendar
                       mode="single"
                       selected={nextDueDate}
