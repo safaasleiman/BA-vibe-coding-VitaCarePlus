@@ -15,6 +15,7 @@ import { de } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { getEncryptionKey, encryptText, decryptText } from "@/lib/encryption";
 import { VaccinationSelect } from "@/components/VaccinationSelect";
+import { VaccinationInfoPanel } from "@/components/VaccinationInfoPanel";
 import { GERMAN_VACCINATIONS, type GermanVaccination } from "@/lib/germanVaccinations";
 
 interface Child {
@@ -284,6 +285,10 @@ export const EditVaccinationDialog = ({ vaccination, children = [], onVaccinatio
               disabled={loading}
               customValue={customVaccineName}
               onCustomValueChange={setCustomVaccineName}
+            />
+            <VaccinationInfoPanel
+              vaccinationName={selectedVaccinationId !== "sonstige" ? formData.vaccine_type : ""}
+              isVisible={!!selectedVaccinationId && selectedVaccinationId !== "sonstige"}
             />
           </div>
 

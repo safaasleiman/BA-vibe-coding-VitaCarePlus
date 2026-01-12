@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.scan-vaccination-record]
 verify_jwt = true
+
+[functions.vaccination-info]
+verify_jwt = false
